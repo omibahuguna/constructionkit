@@ -1187,11 +1187,18 @@ function addVideoClip(track, start, dur, src, label, srcDur) {
 }
 function addTextClip(track, start, text) {
   pushUndo();
+  const clipStart = Math.max(0, start);
+  const clipDur   = Math.min(TEXT_DUR, MAX_DUR - start);
   clips.push({
     id: Date.now()+Math.random(), type:'text', track,
-    start: Math.max(0,start), duration: Math.min(TEXT_DUR, MAX_DUR-start),
+    start: clipStart, duration: clipDur,
     text, fontSize:FONT_DEF, textX:50, textY:75
   });
+  // Seek to clip so the text is immediately visible in preview
+  if (playTime < clipStart || playTime >= clipStart + clipDur) {
+    playTime = clipStart;
+    updatePlayhead();
+  }
   renderClips(); drawRuler(); syncPreview(); updateCounter();
 }
 
