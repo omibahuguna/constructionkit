@@ -6,657 +6,519 @@
 <title>Narrative Construction Kit</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg:        #0d0e12;
+    --surface:   #14161e;
+    --surface-2: #1b1d27;
+    --surface-3: #22253000;
+    --card:      #1e2030;
+    --border:    rgba(255,255,255,0.06);
+    --border-2:  rgba(255,255,255,0.12);
+    --fg:        #d2d5e0;
+    --fg-2:      #6a6d7c;
+    --fg-3:      #383c4a;
+    --accent:    #bec2d4;
+    --track-bg:  #12141c;
+    --ruler-bg:  #0f1018;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
     height: 100%;
     overflow: hidden;
-    background: #0a0a0a;
+    background: var(--bg);
     font-family: 'Space Mono', monospace;
-    color: #ccc;
+    color: var(--fg);
   }
 
-  /* ── INTRO OVERLAY ── */
+  /* ── INTRO ── */
   #intro-overlay {
-    position: fixed;
-    inset: 0;
-    background: #080810;
+    position: fixed; inset: 0;
+    background: #080910;
     z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     gap: 24px;
     animation: introFadeIn 1.4s ease forwards;
   }
-
-  @keyframes introFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  #intro-overlay.dismissing {
-    animation: introFadeOut 0.5s ease forwards;
-    pointer-events: none;
-  }
-
-  @keyframes introFadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
+  @keyframes introFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  #intro-overlay.dismissing { animation: introFadeOut 0.5s ease forwards; pointer-events: none; }
+  @keyframes introFadeOut { from { opacity: 1; } to { opacity: 0; } }
 
   .intro-heading {
     font-family: 'Orbitron', monospace;
-    font-size: clamp(36px, 7vw, 88px);
+    font-size: clamp(34px, 7vw, 86px);
     font-weight: 900;
     letter-spacing: 0.06em;
-    color: #e8e8e8;
+    color: var(--fg);
     text-align: center;
     line-height: 1.1;
     text-transform: uppercase;
     animation: textUp 1.2s 0.5s both;
   }
-
   .intro-sub {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(11px, 1.4vw, 15px);
-    color: #555;
+    font-size: clamp(10px, 1.3vw, 14px);
+    color: var(--fg-2);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     text-align: center;
     animation: textUp 1.2s 0.8s both;
   }
-
-  @keyframes textUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
+  @keyframes textUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   .intro-btn {
     margin-top: 20px;
     font-family: 'Orbitron', monospace;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.3em;
-    color: #e8e8e8;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.3em; color: var(--fg);
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.25);
-    padding: 14px 52px;
-    cursor: pointer;
+    border: 1px solid var(--border-2);
+    padding: 13px 50px; cursor: pointer;
     text-transform: uppercase;
     transition: background 0.2s, border-color 0.2s;
     animation: textUp 1.2s 1.1s both;
   }
-
-  .intro-btn:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.5);
-  }
+  .intro-btn:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.3); }
 
   /* ── LAYOUT ── */
-  .layout {
-    display: flex;
-    height: 100vh;
-  }
+  .layout { display: flex; height: 100vh; }
 
   /* ── SIDEBAR ── */
   .sidebar {
-    width: 40%;
-    background: #1a1a2e;
-    display: flex;
-    flex-direction: column;
+    width: 38%;
+    background: var(--surface);
+    display: flex; flex-direction: column;
     overflow: hidden;
+    border-right: 1px solid var(--border);
   }
 
-  /* Category tabs */
   .category-tabs {
-    display: flex;
-    overflow-x: auto;
+    display: flex; overflow-x: auto;
     padding: 10px 12px 0;
-    flex-shrink: 0;
-    scrollbar-width: none;
-    gap: 2px;
+    flex-shrink: 0; scrollbar-width: none; gap: 1px;
   }
   .category-tabs::-webkit-scrollbar { display: none; }
-
   .cat-tab {
     font-family: 'Space Mono', monospace;
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #444;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--fg-3); background: transparent; border: none;
+    border-bottom: 1px solid transparent;
     padding: 6px 9px 8px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: color 0.15s, border-color 0.15s;
-    flex-shrink: 0;
+    cursor: pointer; white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s; flex-shrink: 0;
   }
-  .cat-tab:hover { color: #888; }
-  .cat-tab.active { color: #e8e8e8; border-bottom-color: #e84393; }
+  .cat-tab:hover { color: var(--fg-2); }
+  .cat-tab.active { color: var(--fg); border-bottom-color: var(--accent); }
 
-  /* Search */
-  .search-bar { padding: 10px 12px; }
-
+  .search-bar { padding: 8px 12px; }
   .search-input-wrapper {
-    display: flex;
-    align-items: center;
-    background: #0a0a0a;
-    border-radius: 4px;
-    padding: 10px 12px;
-    gap: 10px;
+    display: flex; align-items: center;
+    background: var(--bg); border-radius: 3px;
+    padding: 9px 12px; gap: 10px;
+    border: 1px solid var(--border);
   }
-
-  .search-icon { flex-shrink: 0; width: 16px; height: 16px; opacity: 0.5; }
-
+  .search-icon { flex-shrink: 0; width: 14px; height: 14px; opacity: 0.35; }
   .search-input-wrapper input {
-    background: none;
-    border: none;
-    outline: none;
-    color: #ccc;
+    background: none; border: none; outline: none;
+    color: var(--fg);
     font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    width: 100%;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; width: 100%;
   }
-  .search-input-wrapper input::placeholder { color: #444; }
+  .search-input-wrapper input::placeholder { color: var(--fg-3); }
 
-  /* Clip preview */
   .clip-preview-section { flex-shrink: 0; }
-
   .clip-preview-container {
-    background: #0a0a0a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 16 / 9;
-    position: relative;
-    cursor: pointer;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    aspect-ratio: 16/9; position: relative; cursor: pointer;
   }
-
   .clip-preview-container video {
-    width: 100%; height: 100%;
-    display: block; object-fit: contain;
-    background: #0a0a0a;
+    width: 100%; height: 100%; display: block;
+    object-fit: contain; background: var(--bg);
   }
-
   .preview-placeholder {
-    color: #2a2a3e;
-    font-size: 10px;
+    color: var(--fg-3); font-size: 9px;
     font-family: 'Space Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    position: absolute;
-    pointer-events: none;
+    text-transform: uppercase; letter-spacing: 2px;
+    position: absolute; pointer-events: none;
   }
+  .clip-scrubber { height: 3px; background: var(--surface-2); cursor: pointer; position: relative; }
+  .clip-scrubber-fill { height: 100%; background: var(--accent); width: 0%; pointer-events: none; }
 
-  .clip-scrubber { height: 4px; background: #111; cursor: pointer; position: relative; }
-  .clip-scrubber-fill { height: 100%; background: #e84393; width: 0%; pointer-events: none; }
-
-  /* Scrollable media + stamps */
   .sidebar-scroll {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
+    flex: 1; overflow-y: auto;
+    display: flex; flex-direction: column; min-height: 0;
   }
-  .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+  .sidebar-scroll::-webkit-scrollbar { width: 3px; }
   .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
-  .sidebar-scroll::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 2px; }
+  .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--fg-3); border-radius: 2px; }
 
   .media-grid {
-    padding: 12px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    align-content: start;
+    padding: 10px; display: grid;
+    grid-template-columns: 1fr 1fr; gap: 8px; align-content: start;
   }
-
   .card {
-    background: #12121e;
-    border-radius: 5px;
-    padding: 8px;
-    cursor: grab;
-    transition: background 0.15s;
-    user-select: none;
+    background: var(--card); border-radius: 4px;
+    padding: 7px; cursor: grab;
+    transition: background 0.15s; user-select: none;
+    border: 1px solid var(--border);
   }
   .card.hidden { display: none; }
   .card:active { cursor: grabbing; }
-  .card:hover { background: #1e1e30; }
-  .card.active { background: #e84393; }
-  .card.active .card-label { color: rgba(0,0,0,0.6); }
-
+  .card:hover { background: #252838; }
+  .card.active { background: var(--accent); border-color: var(--accent); }
+  .card.active .card-label { color: var(--bg); }
   .card-thumb {
-    width: 100%; aspect-ratio: 16 / 9;
-    background: #2a2a3e; border-radius: 3px;
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--surface-2); border-radius: 2px;
     object-fit: cover; display: block;
   }
-
   .card-label {
-    margin-top: 7px;
+    margin-top: 6px;
     font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: #666;
+    font-size: 8px; text-transform: uppercase;
+    letter-spacing: 0.7px; color: var(--fg-2);
   }
 
   /* Text stamps */
   .text-stamps-section {
-    padding: 12px;
-    border-top: 1px solid #111;
+    padding: 10px 10px 14px;
+    border-top: 1px solid var(--border);
     flex-shrink: 0;
   }
-
   .section-label {
     font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: #333;
-    text-transform: uppercase;
-    margin-bottom: 10px;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.2em; color: var(--fg-3);
+    text-transform: uppercase; margin-bottom: 8px;
   }
-
-  .stamps-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-  }
-
+  .stamps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
   .stamp {
-    background: #0d0d1a;
-    border: 1px solid #22223a;
-    border-radius: 3px;
-    padding: 8px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px; padding: 7px 8px;
     font-family: 'Space Mono', monospace;
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #777;
-    cursor: grab;
-    user-select: none;
-    text-align: center;
-    line-height: 1.3;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--fg-2); cursor: grab; user-select: none;
+    text-align: center; line-height: 1.3;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
-  .stamp:hover { background: #18182e; border-color: #3a3a5e; color: #ccc; }
+  .stamp:hover { background: var(--surface-2); border-color: var(--border-2); color: var(--fg); }
   .stamp:active { cursor: grabbing; }
 
   /* ── MAIN AREA ── */
   .main-area {
-    flex: 1;
-    background: #0a0a0a;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
+    flex: 1; background: var(--bg);
+    display: flex; flex-direction: column; min-width: 0;
   }
 
   .main-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 11px 24px;
-    border-bottom: 1px solid #111;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 22px;
+    border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
-
   .app-title {
     font-family: 'Orbitron', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    color: #333;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; color: var(--fg-3);
     text-transform: uppercase;
   }
-
   .publish-btn {
     font-family: 'Orbitron', monospace;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #0a0a0a;
-    background: #e84393;
-    border: none;
-    padding: 9px 18px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: background 0.15s, opacity 0.15s;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--bg); background: var(--accent);
+    border: none; padding: 8px 16px;
+    cursor: pointer; border-radius: 2px;
+    transition: opacity 0.15s;
   }
-  .publish-btn:hover { background: #ff55a8; }
-  .publish-btn:disabled { opacity: 0.3; cursor: default; }
+  .publish-btn:hover { opacity: 0.85; }
+  .publish-btn:disabled { opacity: 0.25; cursor: default; }
 
   /* Preview */
   .tl-preview-section {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 0;
-    overflow: hidden;
-    position: relative;
+    flex: 1; display: flex;
+    align-items: center; justify-content: center;
+    min-height: 0; overflow: hidden; position: relative;
   }
-
   .tl-preview-container {
-    position: relative;
-    width: 100%; height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0a0a0a;
+    position: relative; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
   }
-
   .tl-preview-container video {
     max-width: 100%; max-height: 100%;
-    object-fit: contain;
-    background: #0a0a0a;
+    object-fit: contain; background: var(--bg);
   }
-
   #tl-text-overlay {
     position: absolute;
-    bottom: 14%;
-    left: 0; right: 0;
+    bottom: 15%; left: 0; right: 0;
     text-align: center;
     pointer-events: none;
     font-family: 'Orbitron', monospace;
-    font-size: clamp(13px, 2.2vw, 26px);
     font-weight: 900;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #fff;
-    text-shadow: 0 2px 16px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.9);
-    display: none;
-    padding: 0 20px;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.9),
+      0 0 20px rgba(0,0,0,0.95),
+      0 4px 24px rgba(0,0,0,1),
+      2px 2px 0 rgba(0,0,0,0.8),
+      -2px -2px 0 rgba(0,0,0,0.8);
+    display: none; padding: 0 20px;
   }
 
   /* Controls */
   .controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 48px;
-    padding: 10px 0;
-    flex-shrink: 0;
-  }
-
-  .ctrl-btn {
-    background: none; border: none; cursor: pointer;
-    padding: 10px;
     display: flex; align-items: center; justify-content: center;
-    transition: opacity 0.15s;
-    opacity: 0.45;
+    gap: 44px; padding: 10px 0; flex-shrink: 0;
   }
-  .ctrl-btn:hover { opacity: 0.8; }
-  .ctrl-btn.play-pause { opacity: 0.75; }
+  .ctrl-btn {
+    background: none; border: none; cursor: pointer; padding: 10px;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.15s; opacity: 0.35;
+  }
+  .ctrl-btn:hover { opacity: 0.7; }
+  .ctrl-btn.play-pause { opacity: 0.65; }
   .ctrl-btn.play-pause:hover { opacity: 1; }
   .ctrl-btn svg { display: block; }
 
   /* ── TIMELINE ── */
-  .timeline { position: relative; flex-shrink: 0; padding: 0 24px 14px; }
+  .timeline { position: relative; flex-shrink: 0; padding: 0 22px 12px; }
 
   .timeline-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    display: flex; align-items: center; justify-content: flex-end;
     padding: 2px 0 4px;
   }
-
   .time-counter {
     font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: #333;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--fg-3);
   }
-  .time-counter .used { color: #e84393; }
+  .time-counter .used { color: var(--fg-2); }
+
+  /* Text clip property bar */
+  #text-props {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 3px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    gap: 12px;
+  }
+  #text-props.hidden { display: none; }
+  .text-props-content {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.1em; color: var(--fg);
+    text-transform: uppercase;
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .text-props-size {
+    display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+  }
+  .text-size-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; color: var(--fg-3);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .text-size-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    color: var(--fg-2); min-width: 28px; text-align: center;
+  }
+  .text-size-btn {
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--fg-2); font-family: 'Space Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px; cursor: pointer; border-radius: 2px;
+    line-height: 1.4;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .text-size-btn:hover { border-color: var(--border-2); color: var(--fg); }
 
   .ruler {
-    position: relative;
-    height: 28px;
-    background: #0d0d0d;
-    cursor: pointer;
-    overflow: hidden;
+    position: relative; height: 26px;
+    background: var(--ruler-bg); cursor: pointer; overflow: hidden;
   }
   .ruler canvas { display: block; width: 100%; height: 100%; }
-
   .timeline-body { position: relative; }
   .tracks-container { position: relative; }
 
   .track {
-    height: 44px;
-    background: #0f0f1a;
-    border-top: 1px solid #1a1a2e;
+    height: 42px;
+    background: var(--track-bg);
+    border-top: 1px solid var(--border);
     position: relative;
   }
-  .track:last-child { border-bottom: 1px solid #1a1a2e; }
-  .track.drag-over { background: #14142a; }
-  .track.stamp-drag-over { background: #1a0f1a; }
+  .track:last-child { border-bottom: 1px solid var(--border); }
+  .track.drag-over { background: #181b26; }
 
   .track-remove {
-    position: absolute;
-    left: 8px; top: 50%;
-    transform: translateY(-50%);
-    width: 20px; height: 20px;
-    background: transparent;
-    border: 1px solid #1a1a2e;
-    border-radius: 2px;
-    color: #2a2a3e;
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    cursor: pointer;
-    display: none;
+    position: absolute; left: 6px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px;
+    background: transparent; border: 1px solid var(--border);
+    border-radius: 2px; color: var(--fg-3);
+    font-family: 'Space Mono', monospace; font-size: 12px;
+    cursor: pointer; display: none;
+    align-items: center; justify-content: center;
+    z-index: 5; padding: 0; line-height: 1;
+  }
+  .track-remove:hover { color: var(--fg-2); border-color: var(--border-2); }
+
+  /* Video clips */
+  .clip {
+    position: absolute; top: 3px; height: 36px;
+    border-radius: 3px;
+    display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: center;
+    padding: 0 8px;
+    font-size: 8px; font-family: 'Space Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.4px;
+    color: rgba(255,255,255,0.7);
+    cursor: grab; user-select: none;
+    overflow: hidden; white-space: nowrap;
+    min-width: 14px; gap: 1px;
+  }
+  .clip:active { cursor: grabbing; }
+  .clip.selected { outline: 1px solid rgba(255,255,255,0.4); outline-offset: -1px; }
+
+  /* Text clips — visually distinct */
+  .clip.clip-text {
+    background: rgba(255,255,255,0.07) !important;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     align-items: center;
     justify-content: center;
-    z-index: 5;
-    padding: 0; line-height: 1;
   }
-  .track-remove:hover { color: #e84393; border-color: #e84393; }
-
-  .clip {
-    position: absolute;
-    top: 4px; height: 36px;
-    border-radius: 3px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 0 8px;
-    font-size: 9px;
-    font-family: 'Space Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: rgba(255,255,255,0.85);
-    cursor: grab;
-    user-select: none;
-    overflow: hidden;
-    white-space: nowrap;
-    min-width: 16px;
-    gap: 2px;
+  .clip.clip-text.selected {
+    outline: 1px solid rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.10) !important;
   }
-  .clip.selected { outline: 2px solid #fff; outline-offset: -2px; }
-  .clip.stamp-target { outline: 2px solid #e84393; outline-offset: -2px; }
-  .clip:active { cursor: grabbing; }
 
   .clip-handle {
-    position: absolute; top: 0;
-    width: 6px; height: 100%;
+    position: absolute; top: 0; width: 6px; height: 100%;
     cursor: ew-resize; z-index: 2;
   }
   .clip-handle.left { left: 0; border-radius: 3px 0 0 3px; }
   .clip-handle.right { right: 0; border-radius: 0 3px 3px 0; }
-  .clip-handle:hover, .clip-handle.dragging { background: rgba(255,255,255,0.18); }
+  .clip-handle:hover, .clip-handle.dragging { background: rgba(255,255,255,0.12); }
 
   .clip-label {
-    pointer-events: none;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-    line-height: 1;
-  }
-
-  .clip-overlay-badge {
-    font-size: 7px;
-    letter-spacing: 0.04em;
-    color: rgba(255,255,255,0.55);
-    pointer-events: none;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    line-height: 1;
-    font-style: italic;
+    pointer-events: none; overflow: hidden;
+    text-overflow: ellipsis; width: 100%; line-height: 1;
   }
 
   .playhead {
     position: absolute; top: 0; left: 0;
     width: 1px; height: 100%;
-    background: #e84393;
+    background: var(--fg);
     pointer-events: none; z-index: 10;
-    box-shadow: 0 0 6px rgba(232,67,147,0.5);
+    box-shadow: 0 0 4px rgba(210,213,224,0.3);
   }
 
   .add-track-btn {
-    height: 26px;
-    background: transparent;
-    border: 1px solid #1a1a2e;
+    height: 24px; background: transparent;
+    border: 1px solid var(--border); width: 100%; margin-top: 2px;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    color: #2a2a3e;
-    font-family: 'Space Mono', monospace;
-    font-size: 16px;
+    cursor: pointer; color: var(--fg-3);
+    font-family: 'Space Mono', monospace; font-size: 14px;
     transition: color 0.15s, border-color 0.15s;
-    width: 100%;
-    margin-top: 2px;
   }
-  .add-track-btn:hover { color: #555; border-color: #3a3a5e; }
+  .add-track-btn:hover { color: var(--fg-2); border-color: var(--border-2); }
 
   .drag-ghost {
     position: fixed; pointer-events: none; z-index: 1000;
-    opacity: 0.75;
-    padding: 5px 10px;
-    background: #1e1e3a;
-    border-radius: 3px;
-    font-size: 9px;
+    opacity: 0.8; padding: 5px 10px;
+    background: var(--surface-2); border: 1px solid var(--border-2);
+    border-radius: 3px; font-size: 8px;
     font-family: 'Space Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #aaa;
+    text-transform: uppercase; letter-spacing: 0.5px; color: var(--fg-2);
   }
-
   .stamp-ghost {
     position: fixed; pointer-events: none; z-index: 1000;
-    opacity: 0.9;
-    padding: 6px 12px;
-    background: rgba(232,67,147,0.12);
-    border: 1px solid rgba(232,67,147,0.5);
+    opacity: 0.9; padding: 6px 12px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.25);
     border-radius: 2px;
-    font-family: 'Orbitron', monospace;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #e84393;
+    font-family: 'Orbitron', monospace; font-size: 9px;
+    font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--fg);
   }
 
-  /* ── FULLSCREEN PUBLISH ── */
+  /* ── PUBLISH OVERLAY ── */
   #publish-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: #000;
-    z-index: 9998;
-    align-items: center;
-    justify-content: center;
+    display: none; position: fixed; inset: 0;
+    background: #000; z-index: 9998;
+    align-items: center; justify-content: center;
   }
   #publish-overlay.active { display: flex; }
-
   #publish-video {
-    max-width: 100%; max-height: 100%;
-    object-fit: contain;
-    display: none;
-  }
-
-  #publish-title-card {
     position: absolute; inset: 0;
-    background: #000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    opacity: 0;
-    transition: opacity 0.8s ease;
-    display: none;
+    width: 100%; height: 100%;
+    object-fit: contain; display: none; background: #000;
+  }
+  #publish-title-card {
+    position: absolute; inset: 0; background: #000;
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+    opacity: 0; transition: opacity 0.8s ease;
   }
   #publish-title-card.visible { opacity: 1; }
-
   .pub-card-title {
     font-family: 'Orbitron', monospace;
-    font-size: clamp(22px, 5vw, 62px);
-    font-weight: 900;
-    letter-spacing: 0.1em;
-    color: #e8e8e8;
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 1.15;
+    font-size: clamp(20px, 5vw, 60px);
+    font-weight: 900; letter-spacing: 0.1em;
+    color: var(--fg); text-transform: uppercase;
+    text-align: center; line-height: 1.15;
   }
-
   .pub-card-sub {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(10px, 1.2vw, 13px);
-    color: #444;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
+    font-size: clamp(9px, 1.1vw, 12px);
+    color: var(--fg-2); letter-spacing: 0.2em; text-transform: uppercase;
   }
-
   #publish-close {
-    position: absolute; top: 22px; right: 22px;
-    background: transparent;
-    border: 1px solid #222;
-    color: #444;
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    padding: 7px 14px;
-    cursor: pointer;
-    text-transform: uppercase;
+    position: absolute; top: 20px; right: 20px; z-index: 10;
+    background: transparent; border: 1px solid var(--fg-3);
+    color: var(--fg-2); font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 0.12em;
+    padding: 6px 12px; cursor: pointer; text-transform: uppercase;
     transition: color 0.15s, border-color 0.15s;
   }
-  #publish-close:hover { color: #888; border-color: #555; }
-
+  #publish-close:hover { color: var(--fg); border-color: var(--fg-2); }
   #publish-text-overlay {
-    position: absolute;
-    bottom: 10%;
-    left: 0; right: 0;
-    text-align: center;
-    pointer-events: none;
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(16px, 3.5vw, 42px);
-    font-weight: 900;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #fff;
-    text-shadow: 0 2px 24px rgba(0,0,0,1), 0 0 80px rgba(0,0,0,0.9);
-    display: none;
-    padding: 0 32px;
+    position: absolute; bottom: 10%; left: 0; right: 0;
+    text-align: center; pointer-events: none; z-index: 5;
+    font-family: 'Orbitron', monospace; font-weight: 900;
+    letter-spacing: 0.1em; text-transform: uppercase; color: #fff;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.9),
+      0 0 30px rgba(0,0,0,1),
+      0 4px 30px rgba(0,0,0,1),
+      3px 3px 0 rgba(0,0,0,0.8),
+      -3px -3px 0 rgba(0,0,0,0.8);
+    display: none; padding: 0 40px;
   }
 </style>
 </head>
 <body>
 
-<!-- ── INTRO OVERLAY ── -->
+<!-- ── INTRO ── -->
 <div id="intro-overlay">
   <h1 class="intro-heading">THE TRUTH IS<br>OUT THERE</h1>
   <p class="intro-sub">You have 60 seconds. Construct your theory.</p>
   <button class="intro-btn" id="intro-begin">BEGIN</button>
 </div>
 
-<!-- ── PUBLISH OVERLAY ── -->
+<!-- ── PUBLISH ── -->
 <div id="publish-overlay">
   <div id="publish-title-card">
     <div class="pub-card-title" id="pub-card-title">NARRATIVE<br>CONSTRUCTION KIT</div>
@@ -672,11 +534,11 @@
   <div class="sidebar">
     <div class="category-tabs" id="category-tabs">
       <button class="cat-tab active" data-cat="ALL">ALL</button>
-      <button class="cat-tab" data-cat="THE AUTHORITY">THE AUTHORITY</button>
-      <button class="cat-tab" data-cat="THE EVIDENCE">THE EVIDENCE</button>
-      <button class="cat-tab" data-cat="THE ORDINARY">THE ORDINARY</button>
-      <button class="cat-tab" data-cat="THE SIGNAL">THE SIGNAL</button>
-      <button class="cat-tab" data-cat="THE REACTION">THE REACTION</button>
+      <button class="cat-tab" data-cat="AUTHORITY">AUTHORITY</button>
+      <button class="cat-tab" data-cat="EVIDENCE">EVIDENCE</button>
+      <button class="cat-tab" data-cat="THE SECRET">THE SECRET</button>
+      <button class="cat-tab" data-cat="ORDINARY">ORDINARY</button>
+      <button class="cat-tab" data-cat="REACTION">REACTION</button>
     </div>
 
     <div class="search-bar">
@@ -690,7 +552,7 @@
 
     <div class="clip-preview-section">
       <div class="clip-preview-container" id="clip-preview-container">
-        <span class="preview-placeholder" id="clip-placeholder">SELECT A VIDEO</span>
+        <span class="preview-placeholder">SELECT A VIDEO</span>
         <video id="clip-player" style="display:none;"></video>
       </div>
       <div class="clip-scrubber" id="clip-scrubber">
@@ -700,9 +562,8 @@
 
     <div class="sidebar-scroll">
       <div class="media-grid" id="media-grid"></div>
-
       <div class="text-stamps-section">
-        <div class="section-label">// TEXT</div>
+        <div class="section-label">// TEXT LAYERS</div>
         <div class="stamps-grid">
           <div class="stamp" data-stamp="COINCIDENCE?">COINCIDENCE?</div>
           <div class="stamp" data-stamp="WHAT ARE THEY HIDING?">WHAT ARE THEY HIDING?</div>
@@ -717,7 +578,7 @@
     </div>
   </div>
 
-  <!-- ── MAIN AREA ── -->
+  <!-- ── MAIN ── -->
   <div class="main-area">
     <div class="main-header">
       <div class="app-title">Narrative Construction Kit</div>
@@ -725,7 +586,7 @@
     </div>
 
     <div class="tl-preview-section">
-      <div class="tl-preview-container" id="tl-preview-container">
+      <div class="tl-preview-container">
         <span class="preview-placeholder" id="tl-placeholder">TIMELINE PREVIEW</span>
         <video id="timeline-player" style="display:none;"></video>
         <div id="tl-text-overlay"></div>
@@ -734,33 +595,41 @@
 
     <div class="controls">
       <button class="ctrl-btn" id="btn-back">
-        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
-          <polygon points="14,6 4,14 14,22" fill="#ccc"/>
-          <polygon points="24,6 14,14 24,22" fill="#ccc"/>
+        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+          <polygon points="14,6 4,14 14,22" fill="#d2d5e0"/>
+          <polygon points="24,6 14,14 24,22" fill="#d2d5e0"/>
         </svg>
       </button>
       <button class="ctrl-btn play-pause" id="btn-play">
-        <svg width="34" height="34" viewBox="0 0 36 36" fill="none" id="play-icon">
-          <polygon points="8,4 8,32 30,18" fill="#ccc"/>
+        <svg width="32" height="32" viewBox="0 0 36 36" fill="none" id="play-icon">
+          <polygon points="8,4 8,32 30,18" fill="#d2d5e0"/>
         </svg>
       </button>
       <button class="ctrl-btn" id="btn-fwd">
-        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
-          <polygon points="14,6 24,14 14,22" fill="#ccc"/>
-          <polygon points="4,6 14,14 4,22" fill="#ccc"/>
+        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+          <polygon points="14,6 24,14 14,22" fill="#d2d5e0"/>
+          <polygon points="4,6 14,14 4,22" fill="#d2d5e0"/>
         </svg>
       </button>
     </div>
 
-    <div class="timeline" id="timeline">
+    <div class="timeline">
       <div class="timeline-header">
         <div class="time-counter" id="time-counter"><span class="used">0</span>/60s</div>
       </div>
+      <!-- Text clip property bar (shown when text clip selected) -->
+      <div id="text-props" class="hidden">
+        <span class="text-props-content" id="text-props-content">TEXT</span>
+        <div class="text-props-size">
+          <span class="text-size-label">SIZE</span>
+          <button class="text-size-btn" id="text-size-down">A−</button>
+          <span class="text-size-val" id="text-size-val">48px</span>
+          <button class="text-size-btn" id="text-size-up">A+</button>
+        </div>
+      </div>
       <div class="timeline-body">
         <div class="playhead" id="playhead"></div>
-        <div class="ruler" id="ruler">
-          <canvas id="ruler-canvas"></canvas>
-        </div>
+        <div class="ruler" id="ruler"><canvas id="ruler-canvas"></canvas></div>
         <div class="tracks-container" id="tracks-container"></div>
       </div>
       <button class="add-track-btn" id="add-track-btn">+</button>
@@ -769,51 +638,58 @@
 </div>
 
 <script>
-  // ── Constants ──
   const MAX_DURATION = 60;
+  const TEXT_DEFAULT_DURATION = 5;
+  const TEXT_DEFAULT_FONTSIZE = 48;
+  const TEXT_MIN_FONTSIZE = 18;
+  const TEXT_MAX_FONTSIZE = 96;
+  const FONT_STEP = 8;
+
+  // Clip colors — grey-blue tones matching reference palette
+  const CLIP_COLORS = [
+    '#2e3348','#353a50','#2b3245','#3c4158','#333854',
+    '#2d3449','#3a3f54','#31364e','#3e4358','#303650'
+  ];
+  let colorIndex = 0;
 
   // ── Refs ──
-  const clipPlayer    = document.getElementById('clip-player');
-  const clipPlaceholder = document.getElementById('clip-placeholder');
-  const clipPreviewContainer = document.getElementById('clip-preview-container');
-  const clipScrubber  = document.getElementById('clip-scrubber');
+  const clipPlayer   = document.getElementById('clip-player');
+  const clipScrubber = document.getElementById('clip-scrubber');
   const clipScrubberFill = document.getElementById('clip-scrubber-fill');
-  const tlPlayer      = document.getElementById('timeline-player');
+  const clipPreviewContainer = document.getElementById('clip-preview-container');
+  const tlPlayer     = document.getElementById('timeline-player');
   const tlPlaceholder = document.getElementById('tl-placeholder');
   const tlTextOverlay = document.getElementById('tl-text-overlay');
-  const searchInput   = document.getElementById('search-input');
-  const mediaGrid     = document.getElementById('media-grid');
-  const btnPlay       = document.getElementById('btn-play');
-  const playIcon      = document.getElementById('play-icon');
-  const btnBack       = document.getElementById('btn-back');
-  const btnFwd        = document.getElementById('btn-fwd');
-  const ruler         = document.getElementById('ruler');
-  const rulerCanvas   = document.getElementById('ruler-canvas');
-  const playhead      = document.getElementById('playhead');
+  const searchInput  = document.getElementById('search-input');
+  const mediaGrid    = document.getElementById('media-grid');
+  const btnPlay      = document.getElementById('btn-play');
+  const playIcon     = document.getElementById('play-icon');
+  const btnBack      = document.getElementById('btn-back');
+  const btnFwd       = document.getElementById('btn-fwd');
+  const ruler        = document.getElementById('ruler');
+  const rulerCanvas  = document.getElementById('ruler-canvas');
+  const playhead     = document.getElementById('playhead');
   const tracksContainer = document.getElementById('tracks-container');
-  const addTrackBtn   = document.getElementById('add-track-btn');
-  const timeCounter   = document.getElementById('time-counter');
-  const ctx           = rulerCanvas.getContext('2d');
+  const addTrackBtn  = document.getElementById('add-track-btn');
+  const timeCounter  = document.getElementById('time-counter');
+  const textProps    = document.getElementById('text-props');
+  const textPropsContent = document.getElementById('text-props-content');
+  const textSizeVal  = document.getElementById('text-size-val');
+  const ctx          = rulerCanvas.getContext('2d');
 
   const getAllTracks = () => document.querySelectorAll('.track');
 
   let trackCount = 0;
-  const CLIP_COLORS = [
-    '#6c5ce7','#e84393','#00b894','#fdcb6e','#e17055',
-    '#0984e3','#00cec9','#d63031','#a29bfe','#55efc4'
-  ];
-  let colorIndex = 0;
-
-  let timelineClips        = [];
-  let isTimelinePlaying    = false;
-  let timelinePlayTime     = 0;
-  let lastFrameTime        = 0;
-  let activeClipForPlayback = null;
-  let pendingSeekClip      = null;
-  let tlCurrentSrc         = '';
-  let selectedClipIds      = new Set();
-  let assetMeta            = {};
-  let activeCategory       = 'ALL';
+  let timelineClips = [];
+  let isPlaying = false;
+  let playTime  = 0;
+  let lastFrame = 0;
+  let activeVideoClip = null;
+  let pendingSeekClip = null;
+  let tlCurrentSrc = '';
+  let selectedClipIds = new Set();
+  let assetMeta = {};
+  let activeCategory = 'ALL';
 
   // ── Undo ──
   const undoStack = [];
@@ -825,9 +701,7 @@
     if (!undoStack.length) return;
     timelineClips = JSON.parse(undoStack.pop());
     selectedClipIds.clear();
-    renderClips();
-    updateTimeCounter();
-    syncTimelinePreview();
+    renderClips(); updateTimeCounter(); updateTextPropsBar(); syncPreview();
   }
 
   // ── Intro ──
@@ -837,7 +711,7 @@
     o.addEventListener('animationend', () => o.remove(), { once: true });
   });
 
-  // ── Category tabs ──
+  // ── Categories ──
   document.querySelectorAll('.cat-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
@@ -846,18 +720,14 @@
       filterGrid();
     });
   });
-
   function filterGrid() {
-    const query = searchInput.value.trim().toLowerCase();
+    const q = searchInput.value.trim().toLowerCase();
     document.querySelectorAll('#media-grid .card').forEach(card => {
-      const label   = (card.dataset.label || '').toLowerCase();
-      const cardCat = card.dataset.category || 'ALL';
-      const catOk   = activeCategory === 'ALL' || cardCat === activeCategory;
-      const srchOk  = !query || label.includes(query);
+      const catOk  = activeCategory === 'ALL' || card.dataset.category === activeCategory;
+      const srchOk = !q || (card.dataset.label || '').toLowerCase().includes(q);
       card.classList.toggle('hidden', !catOk || !srchOk);
     });
   }
-
   searchInput.addEventListener('input', filterGrid);
   searchInput.addEventListener('keydown', e => e.stopPropagation());
 
@@ -869,101 +739,107 @@
     timeCounter.innerHTML = `<span class="used">${used}</span>/${MAX_DURATION}s`;
   }
 
+  // ── Text props bar ──
+  function updateTextPropsBar() {
+    if (selectedClipIds.size !== 1) { textProps.classList.add('hidden'); return; }
+    const id   = [...selectedClipIds][0];
+    const clip = timelineClips.find(c => c.id === id);
+    if (!clip || clip.type !== 'text') { textProps.classList.add('hidden'); return; }
+    textProps.classList.remove('hidden');
+    textPropsContent.textContent = clip.text;
+    textSizeVal.textContent = clip.fontSize + 'px';
+  }
+
+  document.getElementById('text-size-down').addEventListener('click', () => {
+    const id   = [...selectedClipIds][0];
+    const clip = id != null && timelineClips.find(c => c.id === id);
+    if (!clip || clip.type !== 'text') return;
+    clip.fontSize = Math.max(TEXT_MIN_FONTSIZE, clip.fontSize - FONT_STEP);
+    textSizeVal.textContent = clip.fontSize + 'px';
+    syncPreview();
+  });
+  document.getElementById('text-size-up').addEventListener('click', () => {
+    const id   = [...selectedClipIds][0];
+    const clip = id != null && timelineClips.find(c => c.id === id);
+    if (!clip || clip.type !== 'text') return;
+    clip.fontSize = Math.min(TEXT_MAX_FONTSIZE, clip.fontSize + FONT_STEP);
+    textSizeVal.textContent = clip.fontSize + 'px';
+    syncPreview();
+  });
+
   // ── Track management ──
   function createTrack() {
     const idx = trackCount++;
     const track = document.createElement('div');
-    track.className = 'track';
-    track.dataset.track = idx;
+    track.className = 'track'; track.dataset.track = idx;
     const btn = document.createElement('button');
-    btn.className = 'track-remove';
-    btn.innerHTML = '&minus;';
+    btn.className = 'track-remove'; btn.innerHTML = '&minus;';
     btn.addEventListener('click', e => { e.stopPropagation(); removeTrack(idx); });
     track.appendChild(btn);
     tracksContainer.appendChild(track);
-    updateTrackButtons();
-    return track;
+    updateTrackButtons(); return track;
   }
-
   function removeTrack(idx) {
     if (getAllTracks().length <= 1) return;
     if (timelineClips.some(c => c.track === idx)) return;
-    const el = document.querySelector(`.track[data-track="${idx}"]`);
-    if (el) el.remove();
+    document.querySelector(`.track[data-track="${idx}"]`)?.remove();
     updateTrackButtons();
   }
-
   function updateTrackButtons() {
-    const tracks = getAllTracks();
-    tracks.forEach(track => {
-      const idx     = parseInt(track.dataset.track);
-      const hasClip = timelineClips.some(c => c.track === idx);
-      const btn     = track.querySelector('.track-remove');
-      if (btn) btn.style.display = (!hasClip && tracks.length > 1) ? 'flex' : 'none';
+    getAllTracks().forEach(track => {
+      const idx = parseInt(track.dataset.track);
+      const btn = track.querySelector('.track-remove');
+      if (btn) btn.style.display = (!timelineClips.some(c => c.track === idx) && getAllTracks().length > 1) ? 'flex' : 'none';
     });
   }
-
   createTrack(); createTrack(); createTrack();
   addTrackBtn.addEventListener('click', createTrack);
 
-  // ── Clip preview scrub ──
+  // ── Clip preview ──
   clipPreviewContainer.addEventListener('mousedown', e => {
     if (!clipPlayer.duration) return;
     e.preventDefault();
-    const startX = e.clientX;
-    let scrubbing = false;
-    function onMove(e2) {
+    const startX = e.clientX; let scrubbing = false;
+    const onMove = e2 => {
       if (!scrubbing && Math.abs(e2.clientX - startX) > 3) { scrubbing = true; clipPlayer.pause(); }
       if (scrubbing) {
-        const rect = clipPreviewContainer.getBoundingClientRect();
-        const pct  = Math.max(0, Math.min(1, (e2.clientX - rect.left) / rect.width));
+        const pct = Math.max(0, Math.min(1, (e2.clientX - clipPreviewContainer.getBoundingClientRect().left) / clipPreviewContainer.getBoundingClientRect().width));
         clipPlayer.currentTime = pct * clipPlayer.duration;
         clipScrubberFill.style.width = pct * 100 + '%';
       }
-    }
-    function onUp() {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp);
       if (!scrubbing) clipPlayer.paused ? clipPlayer.play() : clipPlayer.pause();
-    }
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
   });
-
   clipScrubber.addEventListener('mousedown', e => {
     const seek = e2 => {
       if (!clipPlayer.duration) return;
-      const rect = clipScrubber.getBoundingClientRect();
-      const pct  = Math.max(0, Math.min(1, (e2.clientX - rect.left) / rect.width));
+      const pct = Math.max(0, Math.min(1, (e2.clientX - clipScrubber.getBoundingClientRect().left) / clipScrubber.getBoundingClientRect().width));
       clipPlayer.currentTime = pct * clipPlayer.duration;
       clipScrubberFill.style.width = pct * 100 + '%';
     };
     seek(e);
     const up = () => { document.removeEventListener('mousemove', seek); document.removeEventListener('mouseup', up); };
-    document.addEventListener('mousemove', seek);
-    document.addEventListener('mouseup', up);
+    document.addEventListener('mousemove', seek); document.addEventListener('mouseup', up);
   });
-
   clipPlayer.addEventListener('timeupdate', () => {
     if (clipPlayer.duration) clipScrubberFill.style.width = clipPlayer.currentTime / clipPlayer.duration * 100 + '%';
   });
   clipPlayer.addEventListener('ended', () => { clipScrubberFill.style.width = '100%'; });
 
-  // ── Thumbnail generation ──
+  // ── Thumbnails ──
   function generateThumbnail(card) {
-    const video = document.createElement('video');
-    video.preload = 'metadata'; video.muted = true;
-    video.src = card.dataset.src;
-    video.addEventListener('loadedmetadata', () => {
-      video.currentTime = video.duration * (0.2 + Math.random() * 0.3);
-      card.dataset.duration = video.duration;
-    });
-    video.addEventListener('seeked', () => {
-      const canvas = card.querySelector('.card-thumb');
-      canvas.width  = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-      video.src = ''; video.load();
+    const v = document.createElement('video');
+    v.preload = 'metadata'; v.muted = true; v.src = card.dataset.src;
+    v.addEventListener('loadedmetadata', () => { v.currentTime = v.duration * (0.2 + Math.random() * 0.3); card.dataset.duration = v.duration; });
+    v.addEventListener('seeked', () => {
+      const c = card.querySelector('.card-thumb');
+      c.width = v.videoWidth; c.height = v.videoHeight;
+      c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+      v.src = ''; v.load();
     });
   }
 
@@ -972,113 +848,85 @@
     card.addEventListener('click', () => {
       document.querySelectorAll('#media-grid .card').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
-      clipPlaceholder.style.display = 'none';
       clipPlayer.style.display = 'block';
       clipPlayer.src = card.dataset.src;
       clipPlayer.play();
       clipScrubberFill.style.width = '0%';
     });
   }
-
   function setupCardDrag(card) {
     card.addEventListener('mousedown', e => {
       if (e.button !== 0) return;
-      const startX = e.clientX, startY = e.clientY;
-      let dragging = false, ghost = null, dragData = null;
-
-      function onMove(e2) {
-        const dx = e2.clientX - startX, dy = e2.clientY - startY;
-        if (!dragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+      const sx = e.clientX, sy = e.clientY;
+      let dragging = false, ghost = null, data = null;
+      const onMove = e2 => {
+        if (!dragging && (Math.abs(e2.clientX - sx) > 5 || Math.abs(e2.clientY - sy) > 5)) {
           dragging = true;
-          dragData = { src: card.dataset.src, label: card.dataset.label, duration: parseFloat(card.dataset.duration) || 30 };
+          data = { src: card.dataset.src, label: card.dataset.label, duration: parseFloat(card.dataset.duration) || 30 };
           ghost = document.createElement('div');
-          ghost.className = 'drag-ghost';
-          ghost.textContent = dragData.label;
+          ghost.className = 'drag-ghost'; ghost.textContent = data.label;
           document.body.appendChild(ghost);
         }
         if (dragging && ghost) {
-          ghost.style.left = e2.clientX + 12 + 'px';
-          ghost.style.top  = e2.clientY - 16 + 'px';
+          ghost.style.left = e2.clientX + 12 + 'px'; ghost.style.top = e2.clientY - 16 + 'px';
           getAllTracks().forEach(t => t.classList.remove('drag-over'));
           const el = document.elementFromPoint(e2.clientX, e2.clientY);
-          if (el && el.closest('.track')) el.closest('.track').classList.add('drag-over');
+          el?.closest('.track')?.classList.add('drag-over');
         }
-      }
-
-      function onUp(e2) {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        if (ghost) { ghost.remove(); ghost = null; }
+      };
+      const onUp = e2 => {
+        document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp);
+        ghost?.remove(); ghost = null;
         getAllTracks().forEach(t => t.classList.remove('drag-over'));
-        if (dragging && dragData) {
-          const el = document.elementFromPoint(e2.clientX, e2.clientY);
-          const track = el && el.closest('.track');
+        if (dragging && data) {
+          const track = document.elementFromPoint(e2.clientX, e2.clientY)?.closest('.track');
           if (track) {
-            const trackIdx = parseInt(track.dataset.track);
-            const rect     = track.getBoundingClientRect();
-            const dropPct  = (e2.clientX - rect.left) / rect.width;
-            const dropTime = Math.max(0, Math.min(dropPct * MAX_DURATION, MAX_DURATION - 0.5));
-            const clipDur  = Math.min(dragData.duration, MAX_DURATION - dropTime);
-            if (clipDur > 0.5) addClip(trackIdx, dropTime, clipDur, dragData.src, dragData.label, dragData.duration);
+            const rect = track.getBoundingClientRect();
+            const dropTime = Math.max(0, Math.min((e2.clientX - rect.left) / rect.width * MAX_DURATION, MAX_DURATION - 0.5));
+            const dur = Math.min(data.duration, MAX_DURATION - dropTime);
+            if (dur > 0.5) addVideoClip(parseInt(track.dataset.track), dropTime, dur, data.src, data.label, data.duration);
           }
         }
-      }
-
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
     });
   }
 
-  // ── Text stamp drag ──
+  // ── Stamp drag → creates TEXT LAYER clip ──
   function setupStampDrag(stampEl) {
     stampEl.addEventListener('mousedown', e => {
       if (e.button !== 0) return;
-      const startX = e.clientX, startY = e.clientY;
-      const stampText = stampEl.dataset.stamp;
+      const sx = e.clientX, sy = e.clientY;
+      const text = stampEl.dataset.stamp;
       let dragging = false, ghost = null;
-
-      function onMove(e2) {
-        const dx = e2.clientX - startX, dy = e2.clientY - startY;
-        if (!dragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+      const onMove = e2 => {
+        if (!dragging && (Math.abs(e2.clientX - sx) > 5 || Math.abs(e2.clientY - sy) > 5)) {
           dragging = true;
           ghost = document.createElement('div');
-          ghost.className = 'stamp-ghost';
-          ghost.textContent = stampText;
+          ghost.className = 'stamp-ghost'; ghost.textContent = text;
           document.body.appendChild(ghost);
         }
         if (dragging && ghost) {
-          ghost.style.left = e2.clientX + 12 + 'px';
-          ghost.style.top  = e2.clientY - 16 + 'px';
-          document.querySelectorAll('.clip').forEach(c => c.classList.remove('stamp-target'));
+          ghost.style.left = e2.clientX + 12 + 'px'; ghost.style.top = e2.clientY - 16 + 'px';
+          getAllTracks().forEach(t => t.classList.remove('drag-over'));
           const el = document.elementFromPoint(e2.clientX, e2.clientY);
-          const clipEl = el && el.closest('.clip');
-          if (clipEl) clipEl.classList.add('stamp-target');
+          el?.closest('.track')?.classList.add('drag-over');
         }
-      }
-
-      function onUp(e2) {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        if (ghost) { ghost.remove(); ghost = null; }
-        document.querySelectorAll('.clip').forEach(c => c.classList.remove('stamp-target'));
+      };
+      const onUp = e2 => {
+        document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp);
+        ghost?.remove(); ghost = null;
+        getAllTracks().forEach(t => t.classList.remove('drag-over'));
         if (dragging) {
-          const el = document.elementFromPoint(e2.clientX, e2.clientY);
-          const clipEl = el && el.closest('.clip');
-          if (clipEl) {
-            const clipId = parseFloat(clipEl.dataset.clipId);
-            const clip   = timelineClips.find(c => c.id === clipId);
-            if (clip) {
-              pushUndo();
-              clip.textOverlay = stampText;
-              renderClips();
-              syncTimelinePreview();
-            }
+          const track = document.elementFromPoint(e2.clientX, e2.clientY)?.closest('.track');
+          if (track) {
+            const rect = track.getBoundingClientRect();
+            const dropTime = Math.max(0, Math.min((e2.clientX - rect.left) / rect.width * MAX_DURATION, MAX_DURATION - TEXT_DEFAULT_DURATION));
+            addTextClip(parseInt(track.dataset.track), dropTime, text);
           }
         }
-      }
-
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
     });
   }
 
@@ -1089,67 +937,40 @@
     'sign of a poorly-balanced economy.mp4','through the mouth and nose.mp4',
     'traffic signs.mp4','where does pollution come from.mp4'
   ];
-
   async function loadMetadata() {
-    try {
-      const r = await fetch('Assets/metadata.json');
-      return r.ok ? await r.json() : {};
-    } catch { return {}; }
+    try { const r = await fetch('Assets/metadata.json'); return r.ok ? await r.json() : {}; } catch { return {}; }
   }
-
-  async function scanAssetsDirectory() {
+  async function scanAssets() {
     try {
-      const r = await fetch('Assets/');
-      if (!r.ok) return [];
-      const html = await r.text();
-      const doc  = new DOMParser().parseFromString(html, 'text/html');
+      const r = await fetch('Assets/'); if (!r.ok) return [];
+      const doc = new DOMParser().parseFromString(await r.text(), 'text/html');
       const files = [];
-      doc.querySelectorAll('a').forEach(link => {
-        const href = link.getAttribute('href');
+      doc.querySelectorAll('a').forEach(a => {
+        const href = a.getAttribute('href');
         if (href && /\.mp4$/i.test(href)) {
-          const raw     = href.split('/').pop();
+          const raw = href.split('/').pop();
           const decoded = decodeURIComponent(raw);
-          const label   = decoded.replace(/\.mp4$/i,'').replace(/[_-]/g,' ').toUpperCase();
-          files.push({ src: 'Assets/' + raw, label, filename: decoded });
+          files.push({ src: 'Assets/' + raw, label: decoded.replace(/\.mp4$/i,'').replace(/[_-]/g,' ').toUpperCase(), filename: decoded });
         }
       });
       return files;
     } catch { return []; }
   }
-
-  function buildFileList(filenames) {
-    return filenames.map(f => ({
-      src: 'Assets/' + encodeURIComponent(f),
-      label: f.replace(/\.mp4$/i,'').replace(/[_-]/g,' ').toUpperCase(),
-      filename: f
-    }));
+  function buildFileList(names) {
+    return names.map(f => ({ src: 'Assets/' + encodeURIComponent(f), label: f.replace(/\.mp4$/i,'').replace(/[_-]/g,' ').toUpperCase(), filename: f }));
   }
-
   function addCardToGrid(f) {
     const card = document.createElement('div');
-    card.className = 'card';
-    card.dataset.src      = f.src;
-    card.dataset.label    = f.label;
+    card.className = 'card'; card.dataset.src = f.src; card.dataset.label = f.label;
     card.dataset.category = assetMeta[f.filename] || 'ALL';
-
-    const canvas = document.createElement('canvas');
-    canvas.className = 'card-thumb';
-    card.appendChild(canvas);
-
-    const lbl = document.createElement('div');
-    lbl.className = 'card-label';
-    lbl.textContent = f.label;
-    card.appendChild(lbl);
-
+    const canvas = document.createElement('canvas'); canvas.className = 'card-thumb'; card.appendChild(canvas);
+    const lbl = document.createElement('div'); lbl.className = 'card-label'; lbl.textContent = f.label; card.appendChild(lbl);
     mediaGrid.appendChild(card);
-    generateThumbnail(card);
-    setupCardClick(card);
-    setupCardDrag(card);
+    generateThumbnail(card); setupCardClick(card); setupCardDrag(card);
   }
-
   async function loadMediaLibrary() {
     assetMeta = await loadMetadata();
-    let files = await scanAssetsDirectory();
+    let files = await scanAssets();
     if (!files.length) files = buildFileList(FALLBACK_FILES);
     files.sort((a, b) => a.label.localeCompare(b.label));
     files.forEach(addCardToGrid);
@@ -1157,53 +978,65 @@
 
   document.querySelectorAll('.stamp').forEach(setupStampDrag);
 
-  // ── Clip management ──
-  function addClip(trackIdx, startTime, clipDur, src, label, srcDuration) {
+  // ── Clip creation ──
+  function addVideoClip(track, start, duration, src, label, srcDuration) {
     pushUndo();
-    const start    = Math.max(0, Math.min(startTime, MAX_DURATION - 0.5));
-    const duration = Math.min(clipDur, MAX_DURATION - start);
-    if (duration < 0.5) return;
     timelineClips.push({
-      id: Date.now() + Math.random(),
-      track: trackIdx,
-      start, duration, src, label,
-      srcDuration, srcOffset: 0,
-      color: CLIP_COLORS[colorIndex++ % CLIP_COLORS.length],
-      textOverlay: null
+      id: Date.now() + Math.random(), type: 'video',
+      track, start: Math.max(0, start),
+      duration: Math.min(duration, MAX_DURATION - start),
+      src, label, srcDuration, srcOffset: 0,
+      color: CLIP_COLORS[colorIndex++ % CLIP_COLORS.length]
     });
-    renderClips();
-    drawRuler();
-    syncTimelinePreview();
-    updateTimeCounter();
+    renderClips(); drawRuler(); syncPreview(); updateTimeCounter();
+  }
+  function addTextClip(track, start, text) {
+    pushUndo();
+    timelineClips.push({
+      id: Date.now() + Math.random(), type: 'text',
+      track, start: Math.max(0, start),
+      duration: Math.min(TEXT_DEFAULT_DURATION, MAX_DURATION - start),
+      text, fontSize: TEXT_DEFAULT_FONTSIZE
+    });
+    renderClips(); drawRuler(); syncPreview(); updateTimeCounter();
   }
 
+  // ── Render clips ──
   function renderClips() {
     document.querySelectorAll('.clip').forEach(el => el.remove());
     timelineClips.forEach(clip => {
       const track = document.querySelector(`.track[data-track="${clip.track}"]`);
       if (!track) return;
+      const isText = clip.type === 'text';
+      const isSel  = selectedClipIds.has(clip.id);
 
       const el = document.createElement('div');
-      el.className = 'clip' + (selectedClipIds.has(clip.id) ? ' selected' : '');
+      el.className = 'clip' + (isText ? ' clip-text' : '') + (isSel ? ' selected' : '');
       el.dataset.clipId = clip.id;
-      el.style.background = clip.color;
       el.style.left  = (clip.start    / MAX_DURATION * 100) + '%';
       el.style.width = (clip.duration / MAX_DURATION * 100) + '%';
+      if (!isText) el.style.background = clip.color;
 
       const handleL = document.createElement('div'); handleL.className = 'clip-handle left';
       const handleR = document.createElement('div'); handleR.className = 'clip-handle right';
-      const labelEl = document.createElement('span'); labelEl.className = 'clip-label'; labelEl.textContent = clip.label;
+      const labelEl = document.createElement('span'); labelEl.className = 'clip-label';
+
+      if (isText) {
+        labelEl.textContent = clip.text;
+        labelEl.style.fontSize = '8px';
+        labelEl.style.fontFamily = "'Orbitron', monospace";
+        labelEl.style.fontWeight = '700';
+        labelEl.style.letterSpacing = '0.06em';
+        labelEl.style.overflow = 'hidden';
+        labelEl.style.textOverflow = 'ellipsis';
+        labelEl.style.maxWidth = '100%';
+        labelEl.style.textAlign = 'center';
+      } else {
+        labelEl.textContent = clip.label;
+      }
 
       el.appendChild(handleL);
       el.appendChild(labelEl);
-
-      if (clip.textOverlay) {
-        const badge = document.createElement('span');
-        badge.className = 'clip-overlay-badge';
-        badge.textContent = '↳ ' + clip.textOverlay;
-        el.appendChild(badge);
-      }
-
       el.appendChild(handleR);
       track.appendChild(el);
 
@@ -1215,7 +1048,7 @@
           if (selectedClipIds.has(clip.id) && selectedClipIds.size === 1) selectedClipIds.clear();
           else { selectedClipIds.clear(); selectedClipIds.add(clip.id); }
         }
-        renderClips();
+        renderClips(); updateTextPropsBar();
       });
 
       setupClipDrag(el, clip);
@@ -1229,222 +1062,187 @@
     el.addEventListener('mousedown', e => {
       if (e.target.classList.contains('clip-handle')) return;
       e.stopPropagation(); e.preventDefault();
-      const startX   = e.clientX;
-      const origStart = clip.start;
+      const sx = e.clientX, origStart = clip.start;
       let pushed = false;
-
-      function onMove(e2) {
+      const onMove = e2 => {
         if (!pushed) { pushUndo(); pushed = true; }
-        const rulerRect = ruler.getBoundingClientRect();
-        const dtSec    = ((e2.clientX - startX) / rulerRect.width) * MAX_DURATION;
-        clip.start     = Math.max(0, Math.min(MAX_DURATION - clip.duration, origStart + dtSec));
-        const trackEl  = document.elementFromPoint(e2.clientX, e2.clientY);
-        const newTrack = trackEl && trackEl.closest('.track');
+        const dt = ((e2.clientX - sx) / ruler.getBoundingClientRect().width) * MAX_DURATION;
+        clip.start = Math.max(0, Math.min(MAX_DURATION - clip.duration, origStart + dt));
+        const newTrack = document.elementFromPoint(e2.clientX, e2.clientY)?.closest('.track');
         if (newTrack) clip.track = parseInt(newTrack.dataset.track);
-        renderClips();
-        updateTimeCounter();
-      }
-
-      function onUp() { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
+        renderClips(); updateTimeCounter();
+      };
+      const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+      document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
     });
   }
 
   function setupClipResize(handle, clip, side) {
     handle.addEventListener('mousedown', e => {
-      e.stopPropagation(); e.preventDefault();
-      pushUndo();
-      const startX    = e.clientX;
-      const origStart  = clip.start;
-      const origDur    = clip.duration;
-      const origOffset = clip.srcOffset;
+      e.stopPropagation(); e.preventDefault(); pushUndo();
+      const sx = e.clientX, os = clip.start, od = clip.duration, oo = clip.srcOffset || 0;
       handle.classList.add('dragging');
-
-      function onMove(e2) {
-        const rulerRect = ruler.getBoundingClientRect();
-        const dtSec     = ((e2.clientX - startX) / rulerRect.width) * MAX_DURATION;
+      const onMove = e2 => {
+        const dt = ((e2.clientX - sx) / ruler.getBoundingClientRect().width) * MAX_DURATION;
         if (side === 'left') {
-          const newStart = Math.max(0, origStart + dtSec);
-          const delta    = newStart - origStart;
-          const newDur   = origDur - delta;
-          if (newDur > 0.5) { clip.start = newStart; clip.duration = newDur; clip.srcOffset = Math.max(0, origOffset + delta); }
+          const ns = Math.max(0, os + dt), delta = ns - os, nd = od - delta;
+          if (nd > 0.5) {
+            clip.start = ns; clip.duration = nd;
+            if (clip.type !== 'text') clip.srcOffset = Math.max(0, oo + delta);
+          }
         } else {
-          const maxDur   = Math.min(clip.srcDuration - clip.srcOffset, MAX_DURATION - clip.start);
-          clip.duration  = Math.max(0.5, Math.min(origDur + dtSec, maxDur));
+          const maxD = clip.type === 'text'
+            ? MAX_DURATION - clip.start
+            : Math.min(clip.srcDuration - oo, MAX_DURATION - clip.start);
+          clip.duration = Math.max(0.5, Math.min(od + dt, maxD));
         }
-        renderClips();
-        updateTimeCounter();
-      }
-
-      function onUp() { handle.classList.remove('dragging'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
+        renderClips(); updateTimeCounter();
+      };
+      const onUp = () => { handle.classList.remove('dragging'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+      document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
     });
   }
 
-  // ── Timeline preview sync ──
-  function syncTimelinePreview() {
-    const clip = getClipAtTime(timelinePlayTime);
-    if (clip) {
-      tlPlaceholder.style.display = 'none';
-      tlPlayer.style.display = 'block';
-      const targetTime = clip.srcOffset + (timelinePlayTime - clip.start);
-      if (tlCurrentSrc === clip.src) {
-        tlPlayer.currentTime = targetTime;
-        if (isTimelinePlaying && tlPlayer.paused) tlPlayer.play();
-        activeClipForPlayback = clip;
-      } else {
-        tlPlayer.pause();
-        pendingSeekClip = clip;
-        tlCurrentSrc = clip.src;
-        tlPlayer.src = clip.src;
-        tlPlayer.load();
-        activeClipForPlayback = clip;
+  // ── Preview sync ──
+  function getVideoClipAtTime(t) {
+    let best = null;
+    for (const c of timelineClips) {
+      if (c.type !== 'video') continue;
+      if (t >= c.start && t < c.start + c.duration) {
+        if (!best || c.track < best.track) best = c;
       }
-      if (clip.textOverlay) { tlTextOverlay.textContent = clip.textOverlay; tlTextOverlay.style.display = 'block'; }
-      else { tlTextOverlay.style.display = 'none'; }
+    }
+    return best;
+  }
+  function getTextClipAtTime(t) {
+    let best = null;
+    for (const c of timelineClips) {
+      if (c.type !== 'text') continue;
+      if (t >= c.start && t < c.start + c.duration) {
+        if (!best || c.track < best.track) best = c;
+      }
+    }
+    return best;
+  }
+
+  function syncPreview() {
+    const vClip = getVideoClipAtTime(playTime);
+    const tClip = getTextClipAtTime(playTime);
+
+    // Video
+    if (vClip) {
+      tlPlaceholder.style.display = 'none'; tlPlayer.style.display = 'block';
+      const tgt = vClip.srcOffset + (playTime - vClip.start);
+      if (tlCurrentSrc === vClip.src) {
+        tlPlayer.currentTime = tgt;
+        if (isPlaying && tlPlayer.paused) tlPlayer.play();
+        activeVideoClip = vClip;
+      } else {
+        tlPlayer.pause(); pendingSeekClip = vClip;
+        tlCurrentSrc = vClip.src; tlPlayer.src = vClip.src; tlPlayer.load();
+        activeVideoClip = vClip;
+      }
     } else {
-      tlPlayer.pause();
-      activeClipForPlayback = null;
+      tlPlayer.pause(); activeVideoClip = null;
+      if (!tClip) { tlPlaceholder.style.display = ''; tlPlayer.style.display = 'none'; }
+      else { tlPlaceholder.style.display = 'none'; }
+    }
+
+    // Text overlay
+    if (tClip) {
+      tlTextOverlay.textContent = tClip.text;
+      tlTextOverlay.style.fontSize = tClip.fontSize + 'px';
+      tlTextOverlay.style.display = 'block';
+    } else {
       tlTextOverlay.style.display = 'none';
     }
   }
 
   tlPlayer.addEventListener('loadeddata', () => {
     if (pendingSeekClip) {
-      const clip = pendingSeekClip; pendingSeekClip = null;
-      tlPlayer.currentTime = Math.max(0, clip.srcOffset + (timelinePlayTime - clip.start));
-      if (isTimelinePlaying) tlPlayer.play();
+      const c = pendingSeekClip; pendingSeekClip = null;
+      tlPlayer.currentTime = Math.max(0, c.srcOffset + (playTime - c.start));
+      if (isPlaying) tlPlayer.play();
     }
   });
 
+  // ── Playback ──
   function setPlayIcon(showPlay) {
     playIcon.innerHTML = showPlay
-      ? '<polygon points="8,4 8,32 30,18" fill="#ccc"/>'
-      : '<rect x="7" y="5" width="7" height="26" rx="1" fill="#ccc"/><rect x="22" y="5" width="7" height="26" rx="1" fill="#ccc"/>';
+      ? '<polygon points="8,4 8,32 30,18" fill="#d2d5e0"/>'
+      : '<rect x="7" y="5" width="7" height="26" rx="1" fill="#d2d5e0"/><rect x="22" y="5" width="7" height="26" rx="1" fill="#d2d5e0"/>';
   }
+  btnPlay.addEventListener('click', () => isPlaying ? stop() : start());
+  btnBack.addEventListener('click', () => { playTime = Math.max(0, playTime - 5); updatePlayhead(); syncPreview(); });
+  btnFwd.addEventListener('click',  () => { playTime = Math.min(MAX_DURATION, playTime + 5); updatePlayhead(); syncPreview(); });
 
-  btnPlay.addEventListener('click', toggleTimelinePlayback);
-  btnBack.addEventListener('click', () => { timelinePlayTime = Math.max(0, timelinePlayTime - 5); updatePlayhead(); syncTimelinePreview(); });
-  btnFwd.addEventListener('click',  () => { timelinePlayTime = Math.min(MAX_DURATION, timelinePlayTime + 5); updatePlayhead(); syncTimelinePreview(); });
-
-  function toggleTimelinePlayback() {
-    isTimelinePlaying ? stopTimelinePlayback() : startTimelinePlayback();
-  }
-  function startTimelinePlayback() {
+  function start() {
     if (!timelineClips.length) return;
-    isTimelinePlaying = true;
-    setPlayIcon(false);
-    lastFrameTime = performance.now();
-    syncTimelinePreview();
-    requestAnimationFrame(timelineTick);
+    isPlaying = true; setPlayIcon(false);
+    lastFrame = performance.now(); syncPreview();
+    requestAnimationFrame(tick);
   }
-  function stopTimelinePlayback() {
-    isTimelinePlaying = false;
-    setPlayIcon(true);
-    tlPlayer.pause();
-    activeClipForPlayback = null;
+  function stop() {
+    isPlaying = false; setPlayIcon(true);
+    tlPlayer.pause(); activeVideoClip = null;
   }
-
-  function getClipAtTime(t) {
-    let best = null;
-    for (const clip of timelineClips) {
-      if (t >= clip.start && t < clip.start + clip.duration) {
-        if (!best || clip.track < best.track) best = clip;
-      }
-    }
-    return best;
-  }
-
-  function timelineTick(now) {
-    if (!isTimelinePlaying) return;
-    const dt = (now - lastFrameTime) / 1000;
-    lastFrameTime = now;
-    timelinePlayTime += dt;
-    if (timelinePlayTime >= MAX_DURATION) {
-      timelinePlayTime = 0;
-      stopTimelinePlayback();
-      updatePlayhead();
-      return;
-    }
+  function tick(now) {
+    if (!isPlaying) return;
+    playTime += (now - lastFrame) / 1000; lastFrame = now;
+    if (playTime >= MAX_DURATION) { playTime = 0; stop(); updatePlayhead(); return; }
     updatePlayhead();
-    const clip = getClipAtTime(timelinePlayTime);
-    if (clip !== activeClipForPlayback) syncTimelinePreview();
-    requestAnimationFrame(timelineTick);
+    if (getVideoClipAtTime(playTime) !== activeVideoClip) syncPreview();
+    // Update text overlay during playback
+    const tClip = getTextClipAtTime(playTime);
+    if (tClip) { tlTextOverlay.textContent = tClip.text; tlTextOverlay.style.fontSize = tClip.fontSize + 'px'; tlTextOverlay.style.display = 'block'; }
+    else { tlTextOverlay.style.display = 'none'; }
+    requestAnimationFrame(tick);
   }
 
   // ── Ruler ──
   function drawRuler() {
-    const dpr  = window.devicePixelRatio || 1;
-    const rect = rulerCanvas.getBoundingClientRect();
-    rulerCanvas.width  = rect.width  * dpr;
-    rulerCanvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, rect.width, rect.height);
+    const dpr = window.devicePixelRatio || 1;
+    const r   = rulerCanvas.getBoundingClientRect();
+    rulerCanvas.width = r.width * dpr; rulerCanvas.height = r.height * dpr;
+    ctx.scale(dpr, dpr); ctx.clearRect(0, 0, r.width, r.height);
 
-    const interval   = getTickInterval(MAX_DURATION, rect.width);
-    const totalTicks = Math.floor(MAX_DURATION / interval);
+    const interval = (() => {
+      const raw = MAX_DURATION / (r.width / 40);
+      for (const s of [1,2,5,10,15,30,60]) if (s >= raw) return s;
+      return 60;
+    })();
 
-    for (let i = 0; i <= totalTicks; i++) {
-      const time    = i * interval;
-      const x       = (time / MAX_DURATION) * rect.width;
-      const isMajor = (i % 5 === 0);
-      ctx.beginPath();
-      ctx.moveTo(x, isMajor ? 4 : 14);
-      ctx.lineTo(x, rect.height);
-      ctx.strokeStyle = isMajor ? '#2a2a2a' : '#1a1a1a';
-      ctx.lineWidth = 1; ctx.stroke();
-      if (isMajor) {
-        ctx.fillStyle = '#444';
-        ctx.font = '9px "Space Mono", monospace';
-        ctx.textAlign = 'left';
-        ctx.fillText(formatTime(time), x + 3, 12);
-      }
+    for (let i = 0; i <= Math.floor(MAX_DURATION / interval); i++) {
+      const t = i * interval, x = (t / MAX_DURATION) * r.width;
+      const maj = i % 5 === 0;
+      ctx.beginPath(); ctx.moveTo(x, maj ? 4 : 14); ctx.lineTo(x, r.height);
+      ctx.strokeStyle = maj ? '#22252e' : '#191c24'; ctx.lineWidth = 1; ctx.stroke();
+      if (maj) { ctx.fillStyle = '#4a4e5e'; ctx.font = '8px "Space Mono",monospace'; ctx.textAlign = 'left'; ctx.fillText(Math.floor(t/60)+':'+(t%60).toString().padStart(2,'0'), x+3, 11); }
     }
-
-    // 60s limit marker
-    ctx.beginPath();
-    ctx.moveTo(rect.width - 1, 0);
-    ctx.lineTo(rect.width - 1, rect.height);
-    ctx.strokeStyle = 'rgba(232,67,147,0.7)';
-    ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = 'rgba(232,67,147,0.85)';
-    ctx.font = 'bold 9px "Space Mono", monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText('60s', rect.width - 4, 12);
-    ctx.textAlign = 'left';
-  }
-
-  function getTickInterval(duration, width) {
-    const raw   = duration / (width / 40);
-    const steps = [1, 2, 5, 10, 15, 30, 60];
-    for (const s of steps) if (s >= raw) return s;
-    return 60;
-  }
-
-  function formatTime(s) {
-    return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    // 60s limit
+    ctx.beginPath(); ctx.moveTo(r.width-1, 0); ctx.lineTo(r.width-1, r.height);
+    ctx.strokeStyle = 'rgba(190,194,212,0.5)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = 'rgba(190,194,212,0.7)'; ctx.font = 'bold 8px "Space Mono",monospace';
+    ctx.textAlign = 'right'; ctx.fillText('60s', r.width-3, 11); ctx.textAlign = 'left';
   }
 
   function updatePlayhead() {
-    playhead.style.left = (timelinePlayTime / MAX_DURATION * 100) + '%';
+    playhead.style.left = (playTime / MAX_DURATION * 100) + '%';
   }
 
   ruler.addEventListener('mousedown', e => {
     const seek = e2 => {
-      const rect = ruler.getBoundingClientRect();
-      timelinePlayTime = Math.max(0, Math.min(1, (e2.clientX - rect.left) / rect.width)) * MAX_DURATION;
-      updatePlayhead(); syncTimelinePreview();
+      const r = ruler.getBoundingClientRect();
+      playTime = Math.max(0, Math.min(1, (e2.clientX - r.left) / r.width)) * MAX_DURATION;
+      updatePlayhead(); syncPreview();
     };
     seek(e);
     const up = () => { document.removeEventListener('mousemove', seek); document.removeEventListener('mouseup', up); };
-    document.addEventListener('mousemove', seek);
-    document.addEventListener('mouseup', up);
+    document.addEventListener('mousemove', seek); document.addEventListener('mouseup', up);
   });
 
   tracksContainer.addEventListener('click', () => {
-    if (selectedClipIds.size) { selectedClipIds.clear(); renderClips(); }
+    if (selectedClipIds.size) { selectedClipIds.clear(); renderClips(); updateTextPropsBar(); }
   });
 
   // ── Keyboard ──
@@ -1452,17 +1250,12 @@
     if (document.getElementById('intro-overlay')) return;
     if (e.code === 'Space') { e.preventDefault(); btnPlay.click(); }
     if ((e.code === 'Backspace' || e.code === 'Delete') && selectedClipIds.size) {
-      e.preventDefault();
-      pushUndo();
+      e.preventDefault(); pushUndo();
       timelineClips = timelineClips.filter(c => !selectedClipIds.has(c.id));
-      selectedClipIds.clear();
-      renderClips(); drawRuler(); syncTimelinePreview(); updateTimeCounter();
+      selectedClipIds.clear(); renderClips(); drawRuler(); syncPreview(); updateTimeCounter(); updateTextPropsBar();
     }
     if (e.code === 'KeyZ' && (e.metaKey || e.ctrlKey) && !e.shiftKey) { e.preventDefault(); undo(); }
-    if (e.code === 'Escape') {
-      const po = document.getElementById('publish-overlay');
-      if (po.classList.contains('active')) endPublish();
-    }
+    if (e.code === 'Escape') { const po = document.getElementById('publish-overlay'); if (po.classList.contains('active')) endPublish(); }
   });
 
   // ── PUBLISH ──
@@ -1473,85 +1266,89 @@
   const pubCardSub       = document.getElementById('pub-card-sub');
   const publishTextOvr   = document.getElementById('publish-text-overlay');
 
-  let publishClips = [], publishIdx = 0, publishActive = false, publishTimer = null;
+  let pubActive = false, pubTimer = null;
+  let pubPlayTime = 0, pubLastFrame = 0, pubRAF = null;
+  let pubCurrentVideoSrc = '', pubCurrentVideoClip = null;
 
   document.getElementById('publish-btn').addEventListener('click', () => {
     if (!timelineClips.length) return;
-    publishClips = [...timelineClips].sort((a, b) => a.start - b.start);
-    publishIdx   = 0;
-    publishActive = true;
-
+    pubActive = true; pubPlayTime = 0;
     publishOverlay.classList.add('active');
-    publishVideo.style.display   = 'none';
-    publishTextOvr.style.display = 'none';
-
-    // Show open title card
-    showTitleCard('NARRATIVE<br>CONSTRUCTION KIT', 'A USER THEORY', () => {
-      if (publishActive) playPublishClip();
-    });
+    publishVideo.style.display = 'none'; publishTextOvr.style.display = 'none';
+    showPubCard('NARRATIVE<br>CONSTRUCTION KIT', 'A USER THEORY', 3000, startPubPlayback);
   });
 
-  function showTitleCard(title, sub, afterMs, callback) {
-    if (typeof afterMs === 'function') { callback = afterMs; afterMs = 3000; }
-    pubCardTitle.innerHTML = title;
-    pubCardSub.textContent  = sub;
+  function showPubCard(title, sub, dur, cb) {
+    pubCardTitle.innerHTML = title; pubCardSub.textContent = sub;
     publishTitleCard.style.display = 'flex';
-    publishVideo.style.display     = 'none';
-    publishTextOvr.style.display   = 'none';
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => { publishTitleCard.classList.add('visible'); });
-    });
-    publishTimer = setTimeout(() => {
+    publishVideo.style.display = 'none'; publishTextOvr.style.display = 'none';
+    requestAnimationFrame(() => requestAnimationFrame(() => publishTitleCard.classList.add('visible')));
+    pubTimer = setTimeout(() => {
       publishTitleCard.classList.remove('visible');
-      setTimeout(() => {
-        publishTitleCard.style.display = 'none';
-        if (callback && publishActive) callback();
-      }, 850);
-    }, afterMs);
+      setTimeout(() => { publishTitleCard.style.display = 'none'; if (pubActive && cb) cb(); }, 850);
+    }, dur);
   }
 
-  function playPublishClip() {
-    if (!publishActive) return;
-    if (publishIdx >= publishClips.length) {
-      showTitleCard('THE TRUTH IS<br>OUT THERE', 'THEORY COMPLETE', 4000);
+  function startPubPlayback() {
+    if (!pubActive) return;
+    pubPlayTime = 0; pubLastFrame = performance.now();
+    pubCurrentVideoSrc = ''; pubCurrentVideoClip = null;
+    publishVideo.style.display = 'block';
+    pubRAF = requestAnimationFrame(pubTick);
+  }
+
+  function pubTick(now) {
+    if (!pubActive) return;
+    pubPlayTime += (now - pubLastFrame) / 1000; pubLastFrame = now;
+    if (pubPlayTime >= MAX_DURATION) {
+      publishVideo.pause(); publishVideo.style.display = 'none';
+      publishTextOvr.style.display = 'none';
+      showPubCard('THE TRUTH IS<br>OUT THERE', 'THEORY COMPLETE', 5000, null);
       return;
     }
-    const clip = publishClips[publishIdx];
-    publishVideo.style.display = 'block';
-    publishVideo.src = clip.src;
-    publishVideo.currentTime = clip.srcOffset || 0;
 
-    if (clip.textOverlay) { publishTextOvr.textContent = clip.textOverlay; publishTextOvr.style.display = 'block'; }
-    else { publishTextOvr.style.display = 'none'; }
+    const vClip = getVideoClipAtTime(pubPlayTime);
+    const tClip = getTextClipAtTime(pubPlayTime);
 
-    publishVideo.play();
-    publishTimer = setTimeout(() => {
-      publishVideo.pause();
-      publishIdx++;
-      playPublishClip();
-    }, clip.duration * 1000);
+    if (vClip) {
+      if (pubCurrentVideoClip !== vClip) {
+        pubCurrentVideoClip = vClip;
+        if (pubCurrentVideoSrc !== vClip.src) {
+          pubCurrentVideoSrc = vClip.src;
+          publishVideo.src = vClip.src;
+          publishVideo.currentTime = vClip.srcOffset + (pubPlayTime - vClip.start);
+          publishVideo.play();
+        } else {
+          publishVideo.currentTime = vClip.srcOffset + (pubPlayTime - vClip.start);
+          if (publishVideo.paused) publishVideo.play();
+        }
+      }
+    } else {
+      if (!publishVideo.paused) publishVideo.pause();
+    }
+
+    if (tClip) {
+      publishTextOvr.textContent = tClip.text;
+      publishTextOvr.style.fontSize = tClip.fontSize + 'px';
+      publishTextOvr.style.display = 'block';
+    } else {
+      publishTextOvr.style.display = 'none';
+    }
+
+    pubRAF = requestAnimationFrame(pubTick);
   }
 
   function endPublish() {
-    publishActive = false;
-    clearTimeout(publishTimer);
-    publishVideo.pause();
-    publishVideo.src = '';
-    publishTitleCard.classList.remove('visible');
-    publishTitleCard.style.display = 'none';
-    publishTextOvr.style.display   = 'none';
-    publishOverlay.classList.remove('active');
-    publishIdx = 0;
+    pubActive = false; clearTimeout(pubTimer); cancelAnimationFrame(pubRAF);
+    publishVideo.pause(); publishVideo.src = '';
+    publishTitleCard.classList.remove('visible'); publishTitleCard.style.display = 'none';
+    publishTextOvr.style.display = 'none'; publishOverlay.classList.remove('active');
   }
-
   document.getElementById('publish-close').addEventListener('click', endPublish);
 
   // ── Init ──
-  updatePlayhead();
-  updateTimeCounter();
-  loadMediaLibrary();
-
-  document.fonts.ready.then(() => { drawRuler(); });
+  updatePlayhead(); updateTimeCounter(); loadMediaLibrary();
+  document.fonts.ready.then(() => drawRuler());
   window.addEventListener('resize', () => { drawRuler(); renderClips(); });
 </script>
 </body>
