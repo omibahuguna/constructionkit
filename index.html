@@ -126,8 +126,8 @@ input  { font-family: inherit; }
    SIDEBAR
 ───────────────────────────────────────── */
 .sidebar {
-  width: 360px;
-  min-width: 300px;
+  width: 400px;
+  min-width: 400px;
   background: var(--surface);
   display: flex; flex-direction: column;
   overflow: hidden;
@@ -197,7 +197,7 @@ input  { font-family: inherit; }
 
 /* Scrollable: media grid + stamps */
 .sidebar-scroll {
-  flex: 1; overflow-y: auto;
+  flex: 1; overflow-y: auto; overflow-x: hidden;
   display: flex; flex-direction: column; min-height: 0;
 }
 .sidebar-scroll::-webkit-scrollbar { width: 4px; }
@@ -246,7 +246,25 @@ input  { font-family: inherit; }
   color: var(--fg-3);
   margin-bottom: var(--sp-2);
 }
-.stamps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-1); }
+.stamp-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0 var(--sp-2);
+  height: var(--target-sm);
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  cursor: pointer;
+  margin-bottom: var(--sp-2);
+  appearance: none; -webkit-appearance: none;
+}
+.stamp-select:hover { border-color: var(--border-2); color: var(--fg); }
+.stamp-select:focus { outline: none; border-color: var(--border-2); }
 .stamp {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -696,7 +714,7 @@ input  { font-family: inherit; }
       <button class="cat-tab active" data-cat="ALL">All</button>
       <button class="cat-tab" data-cat="AUTHORITY">Authority</button>
       <button class="cat-tab" data-cat="EVIDENCE">Evidence</button>
-      <button class="cat-tab" data-cat="THE SECRET">The Secret</button>
+      <button class="cat-tab" data-cat="SECRET">The Secret</button>
       <button class="cat-tab" data-cat="ORDINARY">Ordinary</button>
       <button class="cat-tab" data-cat="REACTION">Reaction</button>
     </div>
@@ -723,16 +741,18 @@ input  { font-family: inherit; }
       <div class="media-grid" id="media-grid"></div>
       <div class="text-stamps-section">
         <div class="section-label">Text layers</div>
-        <div class="stamps-grid">
-          <div class="stamp" data-stamp="COINCIDENCE?">COINCIDENCE?</div>
-          <div class="stamp" data-stamp="WHAT ARE THEY HIDING?">WHAT ARE THEY HIDING?</div>
-          <div class="stamp" data-stamp="EXPOSED">EXPOSED</div>
-          <div class="stamp" data-stamp="FOLLOW THE MONEY">FOLLOW THE MONEY</div>
-          <div class="stamp" data-stamp="THEY KNEW">THEY KNEW</div>
-          <div class="stamp" data-stamp="ASK YOURSELF WHY">ASK YOURSELF WHY</div>
-          <div class="stamp" data-stamp="LOOK CLOSER">LOOK CLOSER</div>
-          <div class="stamp" data-stamp="WAKE UP">WAKE UP</div>
-        </div>
+        <select class="stamp-select" id="stamp-select">
+          <option value="COINCIDENCE?">COINCIDENCE?</option>
+          <option value="WHAT ARE THEY HIDING?">WHAT ARE THEY HIDING?</option>
+          <option value="EXPOSED">EXPOSED</option>
+          <option value="FOLLOW THE MONEY">FOLLOW THE MONEY</option>
+          <option value="THEY KNEW">THEY KNEW</option>
+          <option value="ASK YOURSELF WHY">ASK YOURSELF WHY</option>
+          <option value="LOOK CLOSER">LOOK CLOSER</option>
+          <option value="WAKE UP">WAKE UP</option>
+          <option value="THE TRUTH IS OUT THERE!">THE TRUTH IS OUT THERE!</option>
+        </select>
+        <div class="stamp" id="active-stamp" data-stamp="COINCIDENCE?">COINCIDENCE?</div>
       </div>
     </div>
   </div>
@@ -1091,6 +1111,12 @@ function setupCard(card) {
 /* ─────────────────────────────────────────
    STAMP DRAG → TEXT LAYER CLIP
 ───────────────────────────────────────── */
+document.getElementById('stamp-select').addEventListener('change', e => {
+  const el = document.getElementById('active-stamp');
+  el.dataset.stamp = e.target.value;
+  el.textContent = e.target.value;
+});
+
 document.querySelectorAll('.stamp').forEach(stamp => {
   stamp.addEventListener('mousedown', e => {
     if (e.button !== 0) return;

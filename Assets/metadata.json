@@ -1,12 +1,12 @@
 {
-  "40k end up in morgues.mp4": "ALL",
-  "a_bomb.mp4": "ALL",
-  "come stay in this hotel.mp4": "ALL",
-  "enemy would like.mp4": "ALL",
-  "lesbian implications.mp4": "ALL",
-  "psychiatrists believe.mp4": "ALL",
-  "sign of a poorly-balanced economy.mp4": "ALL",
-  "through the mouth and nose.mp4": "ALL",
-  "traffic signs.mp4": "ALL",
-  "where does pollution come from.mp4": "ALL"
+  "40k end up in morgues.mp4": "SECRET",
+  "a_bomb.mp4": "EVIDENCE",
+  "come stay in this hotel.mp4": "ORDINARY",
+  "enemy would like.mp4": "AUTHORITY",
+  "lesbian implications.mp4": "EVIDENCE",
+  "psychiatrists believe.mp4": "AUTHORITY",
+  "sign of a poorly-balanced economy.mp4": "EVIDENCE",
+  "through the mouth and nose.mp4": "SECRET",
+  "traffic signs.mp4": "AUTHORITY",
+  "where does pollution come from.mp4": "SECRET"
 }
