@@ -126,8 +126,8 @@ input  { font-family: inherit; }
    SIDEBAR
 ───────────────────────────────────────── */
 .sidebar {
-  width: 400px;
-  min-width: 400px;
+  width: 480px;
+  min-width: 480px;
   background: var(--surface);
   display: flex; flex-direction: column;
   overflow: hidden;
@@ -185,7 +185,7 @@ input  { font-family: inherit; }
 .clip-preview-container {
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
-  aspect-ratio: 16/9; position: relative; cursor: pointer;
+  height: 140px; position: relative; cursor: pointer;
   overflow: hidden;
 }
 .clip-preview-container video {
@@ -206,7 +206,7 @@ input  { font-family: inherit; }
 
 .media-grid {
   padding: var(--sp-3); display: grid;
-  grid-template-columns: 1fr 1fr; gap: var(--sp-2); align-content: start;
+  grid-template-columns: 1fr 1fr 1fr; gap: var(--sp-2); align-content: start;
 }
 .card {
   background: var(--card); border-radius: 4px;
@@ -914,7 +914,7 @@ document.querySelectorAll('.cat-tab').forEach(t => t.addEventListener('click', (
 function filterGrid() {
   const q = searchInput.value.trim().toLowerCase();
   document.querySelectorAll('#media-grid .card').forEach(c => {
-    const catOk  = activeCat === 'ALL' || c.dataset.category === activeCat;
+    const catOk  = activeCat === 'ALL' || c.dataset.category === 'ALL' || c.dataset.category === activeCat;
     const srchOk = !q || (c.dataset.label||'').toLowerCase().includes(q);
     c.classList.toggle('hidden', !catOk || !srchOk);
   });
@@ -1196,6 +1196,7 @@ async function loadLibrary() {
   if (!files.length) files = buildList(FALLBACK);
   files.sort((a,b)=>a.label.localeCompare(b.label));
   files.forEach(addCard);
+  filterGrid(); // Re-apply active filter after all cards are in the DOM
 }
 
 /* ─────────────────────────────────────────
