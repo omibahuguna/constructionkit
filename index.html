@@ -471,12 +471,13 @@ input  { font-family: inherit; }
 }
 .size-btn:hover { border-color: var(--border-2); color: var(--fg); }
 
-/* Ruler */
+/* Ruler — indented to match track-clips origin */
 .ruler {
   height: 28px;
   background: var(--ruler-bg);
   cursor: pointer; overflow: hidden;
   border-radius: 2px 2px 0 0;
+  margin-left: 52px; /* aligns with .track-clips, matching .track-label width */
 }
 .ruler canvas { display: block; width: 100%; height: 100%; }
 
@@ -489,15 +490,14 @@ input  { font-family: inherit; }
   background: var(--track-bg);
   border-top: 1px solid var(--border);
   position: relative;
-  display: flex; align-items: center;
 }
 .track:last-child { border-bottom: 1px solid var(--border); }
 .track.drag-over { background: #181b26; }
 
-/* Track layer label */
+/* Track layer label — absolute overlay so track-clips spans full width */
 .track-label {
-  width: 52px;
-  flex-shrink: 0;
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 52px; z-index: 2;
   font-size: var(--text-2xs);
   letter-spacing: 0.04em;
   color: var(--fg-3);
@@ -506,13 +506,13 @@ input  { font-family: inherit; }
   pointer-events: none;
   text-align: right;
   white-space: nowrap;
+  display: flex; align-items: center; justify-content: flex-end;
+  background: linear-gradient(to right, var(--track-bg) 60%, transparent);
 }
 
-/* Track clip area — clips position absolutely within this */
+/* Track clip area — full track width, same coordinate space as ruler */
 .track-clips {
-  flex: 1;
-  height: 100%;
-  position: relative;
+  position: absolute; inset: 0;
 }
 
 /* Track remove button */
@@ -1203,30 +1203,60 @@ async function loadLibrary() {
    CLIP CREATION
 ───────────────────────────────────────── */
 function addVideoClip(track, start, dur, src, label, srcDur) {
+  const s = Math.max(0, start);
+  const d = Math.min(dur, MAX_DUR - start);
+  if (d <= 0.5 || wouldOverlap(track, s, d)) return; // reject overlap
   pushUndo();
   clips.push({
     id: Date.now()+Math.random(), type:'video', track,
-    start: Math.max(0,start), duration: Math.min(dur, MAX_DUR-start),
+    start: s, duration: d,
     src, label, srcDuration:srcDur, srcOffset:0,
     color: CLIP_COLORS[colorIdx++ % CLIP_COLORS.length]
   });
   renderClips(); drawRuler(); syncPreview(); updateCounter();
 }
 function addTextClip(track, start, text) {
-  pushUndo();
   const clipStart = Math.max(0, start);
   const clipDur   = Math.min(TEXT_DUR, MAX_DUR - start);
+  if (wouldOverlap(track, clipStart, clipDur)) return; // reject overlap
+  pushUndo();
   clips.push({
     id: Date.now()+Math.random(), type:'text', track,
     start: clipStart, duration: clipDur,
     text, fontSize:FONT_DEF, textX:50, textY:75
   });
-  // Seek to clip so the text is immediately visible in preview
   if (playTime < clipStart || playTime >= clipStart + clipDur) {
     playTime = clipStart;
     updatePlayhead();
   }
   renderClips(); drawRuler(); syncPreview(); updateCounter();
+}
+
+/* ─────────────────────────────────────────
+   OVERLAP HELPERS
+───────────────────────────────────────── */
+function wouldOverlap(track, start, duration, excludeId = null) {
+  return clips.some(c =>
+    c.id !== excludeId &&
+    c.track === track &&
+    start < c.start + c.duration &&
+    start + duration > c.start
+  );
+}
+
+// Snap-to-edge: returns the nearest valid start position for a clip,
+// snapping to the adjacent clip's edge rather than freezing in place.
+function clampDragStart(clip, desired) {
+  const raw = Math.max(0, Math.min(MAX_DUR - clip.duration, desired));
+  const peers = clips.filter(c => c.id !== clip.id && c.track === clip.track);
+  let result = raw;
+  for (const p of peers) {
+    if (result < p.start + p.duration && result + clip.duration > p.start) {
+      // Snap to whichever edge is closer
+      result = desired >= p.start ? p.start + p.duration : p.start - clip.duration;
+    }
+  }
+  return Math.max(0, Math.min(MAX_DUR - clip.duration, result));
 }
 
 /* ─────────────────────────────────────────
@@ -1275,9 +1305,10 @@ function setupClipDrag(el, clip, clipArea) {
     const onMove = e2 => {
       if (!pushed) { pushUndo(); pushed=true; }
       const rRect = ruler.getBoundingClientRect();
-      clip.start = Math.max(0, Math.min(MAX_DUR-clip.duration, os+((e2.clientX-sx)/rRect.width)*MAX_DUR));
+      const desired = os + ((e2.clientX - sx) / rRect.width) * MAX_DUR;
       const newArea = e2.target?.closest?.('.track-clips');
       if (newArea) clip.track = parseInt(newArea.dataset.trackClips);
+      clip.start = clampDragStart(clip, desired);
       renderClips(); updateCounter();
     };
     const onUp = () => { document.removeEventListener('mousemove',onMove); document.removeEventListener('mouseup',onUp); };
@@ -1293,11 +1324,21 @@ function setupResize(handle, clip, side, clipArea) {
     const onMove = e2 => {
       const dt = ((e2.clientX-sx)/ruler.getBoundingClientRect().width)*MAX_DUR;
       if (side==='left') {
-        const ns=Math.max(0,os+dt), d=ns-os, nd=od-d;
-        if (nd>0.5) { clip.start=ns; clip.duration=nd; if(clip.type!=='text') clip.srcOffset=Math.max(0,oo+d); }
+        const ns = Math.max(0, os+dt);
+        const d  = ns - os;
+        const nd = od - d;
+        const newOffset = oo + d;
+        // Reject: too short, would go before source start, or would overlap a peer
+        if (nd > 0.5 && (clip.type==='text' || newOffset >= 0) && !wouldOverlap(clip.track, ns, nd, clip.id)) {
+          clip.start = ns; clip.duration = nd;
+          if (clip.type !== 'text') clip.srcOffset = newOffset;
+        }
       } else {
         const maxD = clip.type==='text' ? MAX_DUR-clip.start : Math.min(clip.srcDuration-oo, MAX_DUR-clip.start);
-        clip.duration = Math.max(0.5, Math.min(od+dt, maxD));
+        const newDur = Math.max(0.5, Math.min(od+dt, maxD));
+        if (!wouldOverlap(clip.track, clip.start, newDur, clip.id)) {
+          clip.duration = newDur;
+        }
       }
       renderClips(); updateCounter();
     };
@@ -1401,6 +1442,15 @@ tlPlayer.addEventListener('loadeddata', () => {
   }
 });
 
+tlPlayer.addEventListener('ended', () => {
+  // Video finished — advance playTime past the clip so tick picks up the next one
+  if (playing && activeVid) {
+    playTime = activeVid.start + activeVid.duration;
+    activeVid = null;
+    syncPreview();
+  }
+});
+
 /* ─────────────────────────────────────────
    PLAYBACK
 ───────────────────────────────────────── */
@@ -1421,7 +1471,16 @@ function stop() { playing=false; setPlayIcon(true); tlPlayer.pause(); activeVid=
 
 function tick(now) {
   if (!playing) return;
-  playTime += (now-lastRaf)/1000; lastRaf=now;
+  const dt = (now - lastRaf) / 1000;
+  lastRaf = now;
+
+  // Derive playTime from video when playing — prevents wall-clock drift
+  if (activeVid && !tlPlayer.paused && !tlPlayer.seeking && !tlPlayer.ended) {
+    playTime = activeVid.start + (tlPlayer.currentTime - activeVid.srcOffset);
+  } else {
+    playTime += dt;
+  }
+
   if (playTime >= MAX_DUR) { playTime=0; stop(); updatePlayhead(); return; }
   updatePlayhead();
   if (getVideoAt(playTime) !== activeVid) syncPreview();
@@ -1455,7 +1514,11 @@ function drawRuler() {
   rCtx.textAlign='right'; rCtx.fillText('60s', r.width-3, 11); rCtx.textAlign='left';
 }
 
-function updatePlayhead() { playhead.style.left = (playTime/MAX_DUR*100)+'%'; }
+function updatePlayhead() {
+  const bodyW = playhead.parentElement.offsetWidth;
+  const px = 52 + (playTime / MAX_DUR) * (bodyW - 52);
+  playhead.style.left = px + 'px';
+}
 
 ruler.addEventListener('mousedown', e => {
   const seek = e2 => {
