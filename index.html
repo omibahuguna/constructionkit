@@ -1345,7 +1345,7 @@ function renderClips() {
     const hL = document.createElement('div'); hL.className='clip-handle left';
     const hR = document.createElement('div'); hR.className='clip-handle right';
     const lbl = document.createElement('span'); lbl.className='clip-label';
-    lbl.textContent = isText ? 'TEXT' : '';
+    lbl.textContent = isText ? clip.text : '';
     if (isText) { lbl.style.fontFamily='var(--font-display)'; lbl.style.fontSize='8px'; lbl.style.textAlign='center'; lbl.style.width='100%'; }
 
     el.appendChild(hL); el.appendChild(lbl);
