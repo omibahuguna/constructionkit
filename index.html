@@ -1831,13 +1831,43 @@ document.getElementById('publish-btn').addEventListener('click', async () => {
     ? 'video/mp4'
     : 'video/webm';
 
+  // ── Audio mixing via AudioContext ──
+  const audioCtx = new AudioContext();
+  const audioDest = audioCtx.createMediaStreamDestination();
+
+  // Connect main export video player audio
+  const expPlayerSource = audioCtx.createMediaElementSource(expPlayer);
+  expPlayerSource.connect(audioDest);
+  expPlayerSource.connect(audioCtx.destination); // allow hearing during export (optional)
+
+  // Create audio elements for audio-track clips
+  const expAudioEls = [];
+  const audioClipDefs = clips.filter(c => c.type === 'video' && c.track === 2);
+  for (const ac of audioClipDefs) {
+    const el = document.createElement('video');
+    el.style.display = 'none';
+    el.preload = 'auto';
+    el.src = ac.src;
+    document.body.appendChild(el);
+    const src = audioCtx.createMediaElementSource(el);
+    src.connect(audioDest);
+    expAudioEls.push({ el, clip: ac, source: src });
+  }
+
+  // Merge canvas video stream + audio stream
   const canvasStream = exportCanvas.captureStream(30);
-  const recorder = new MediaRecorder(canvasStream, { mimeType });
+  const combinedStream = new MediaStream([
+    ...canvasStream.getVideoTracks(),
+    ...audioDest.stream.getAudioTracks()
+  ]);
+  const recorder = new MediaRecorder(combinedStream, { mimeType });
   const chunks = [];
 
   recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
   recorder.onstop = () => {
     expPlayer.remove();
+    expAudioEls.forEach(a => { a.el.pause(); a.el.src = ''; a.el.remove(); });
+    audioCtx.close().catch(()=>{});
     if (!chunks.length) { pubOverlay.classList.remove('active'); return; }
     const blob = new Blob(chunks, { type: mimeType });
     const url  = URL.createObjectURL(blob);
@@ -1889,6 +1919,18 @@ document.getElementById('publish-btn').addEventListener('click', async () => {
       }
     } else {
       ctx.fillStyle = '#000'; ctx.fillRect(0, 0, EXP_W, EXP_H);
+    }
+
+    // Sync audio-track clips
+    for (const a of expAudioEls) {
+      const c = a.clip;
+      if (expTime >= c.start && expTime < c.start + c.duration) {
+        const target = c.srcOffset + (expTime - c.start);
+        if (Math.abs(a.el.currentTime - target) > 0.4) a.el.currentTime = target;
+        if (a.el.paused && !a.el.ended) a.el.play().catch(()=>{});
+      } else {
+        if (!a.el.paused) a.el.pause();
+      }
     }
 
     // Draw text overlays
