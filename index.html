@@ -1510,16 +1510,17 @@ function teardownAudioTracks() {
    PREVIEW SYNC
 ───────────────────────────────────────── */
 function getVideoAt(t) {
-  // Lower track index = higher layer priority (track 0 = top)
-  // Clips on audio-type tracks contribute sound only, not video
+  // The clip rendered on top (highest index in clips array = most recently placed)
+  // takes priority when clips overlap. Audio track clips contribute sound only.
   let best = null;
-  for (const c of clips) {
-    if (c.type !== 'video') continue;
-    if (c.track === 2) continue; // audio track
+  let bestIdx = -1;
+  clips.forEach((c, i) => {
+    if (c.type !== 'video') return;
+    if (c.track === 2) return; // audio track
     if (t >= c.start && t < c.start + c.duration) {
-      if (!best || c.track < best.track) best = c;
+      if (i > bestIdx) { best = c; bestIdx = i; }
     }
-  }
+  });
   return best;
 }
 
