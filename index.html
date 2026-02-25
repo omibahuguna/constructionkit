@@ -1312,10 +1312,14 @@ function posGhost(g, e) { g.style.left = e.clientX+12+'px'; g.style.top = e.clie
    MEDIA LIBRARY
 ───────────────────────────────────────── */
 const FALLBACK = [
-  '40k end up in morgues.mp4','a_bomb.mp4','come stay in this hotel.mp4',
-  'enemy would like.mp4','lesbian implications.mp4','psychiatrists believe.mp4',
-  'sign of a poorly-balanced economy.mp4','through the mouth and nose.mp4',
-  'traffic signs.mp4','where does pollution come from.mp4'
+  '40k end up in morgues.mp4','6 teaspoons of butter.mp4','a_bomb.mp4',
+  'an impossible dream.mp4','come stay in this hotel.mp4','despotism.mp4',
+  'enemy would like.mp4','fact.mp4','injection.mp4','kills germs.mp4',
+  'lesbian implications.mp4','lie under the table.mp4','mom and daughters.mp4',
+  'people.mp4','psychiatrists believe.mp4','sign of a poorly-balanced economy.mp4',
+  'through the mouth and nose.mp4','traffic signs.mp4','wake up.mp4',
+  'whats going on.mp4','where does pollution come from.mp4',
+  'whole earth in our hands.mp4','why would john smith choose.mp4'
 ];
 async function loadMeta() { try { const r=await fetch('Assets/metadata.json'); return r.ok?await r.json():{}; } catch { return {}; } }
 async function scanAssets() {
