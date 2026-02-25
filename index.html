@@ -142,6 +142,7 @@ input  { font-family: inherit; }
   padding: var(--sp-2) var(--sp-3);
   flex-shrink: 0; gap: 4px;
   border-top: 1px solid var(--border-2);
+  border-bottom: 1px solid var(--border-2);
 }
 
 .cat-tab {
@@ -797,18 +798,17 @@ input  { font-family: inherit; }
       </div>
     </div>
 
-    <div class="category-tabs">
-      <button class="cat-tab active" data-cat="ALL">All</button>
-      <button class="cat-tab" data-cat="AUTHORITY">Authority</button>
-      <button class="cat-tab" data-cat="EVIDENCE">Evidence</button>
-      <button class="cat-tab" data-cat="SECRET">The Secret</button>
-      <button class="cat-tab" data-cat="ORDINARY">Ordinary</button>
-      <button class="cat-tab" data-cat="REACTION">Reaction</button>
-    </div>
-
     <div class="sidebar-scroll">
       <div class="section-label" style="padding: var(--sp-2) var(--sp-3) 0; flex-shrink:0;">&gt; Video Clips</div>
       <div class="media-grid" id="media-grid"></div>
+      <div class="category-tabs">
+        <button class="cat-tab active" data-cat="ALL">All</button>
+        <button class="cat-tab" data-cat="AUTHORITY">Authority</button>
+        <button class="cat-tab" data-cat="EVIDENCE">Evidence</button>
+        <button class="cat-tab" data-cat="SECRET">The Secret</button>
+        <button class="cat-tab" data-cat="ORDINARY">Ordinary</button>
+        <button class="cat-tab" data-cat="REACTION">Reaction</button>
+      </div>
       <div class="text-stamps-section">
         <div class="section-label">&gt; Text Stamps</div>
         <div class="stamp-select-wrapper">
