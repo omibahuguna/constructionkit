@@ -994,7 +994,7 @@ function filterGrid() {
   });
 }
 searchInput.addEventListener('input', filterGrid);
-searchInput.addEventListener('keydown', e => e.stopPropagation());
+searchInput.addEventListener('keydown', e => { if(e.code==='Space') e.stopPropagation(); });
 
 /* ─────────────────────────────────────────
    COUNTER
@@ -1181,7 +1181,7 @@ document.getElementById('custom-stamp-input').addEventListener('input', e => {
   stampEl.dataset.stamp = val;
   stampEl.textContent = val || '—';
 });
-document.getElementById('custom-stamp-input').addEventListener('keydown', e => e.stopPropagation());
+document.getElementById('custom-stamp-input').addEventListener('keydown', e => { if(e.code==='Space') e.stopPropagation(); });
 
 document.querySelectorAll('.stamp').forEach(stamp => {
   stamp.addEventListener('mousedown', e => {
@@ -1689,8 +1689,9 @@ tracksCont.addEventListener('click', () => {
 document.addEventListener('keydown', e => {
   const introEl = document.getElementById('intro-overlay');
   if (introEl && getComputedStyle(introEl).display !== 'none') return;
-  if (e.code==='Space') { e.preventDefault(); btnPlay.click(); }
-  if ((e.code==='Backspace'||e.code==='Delete') && selIds.size) {
+  const inInput = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
+  if (e.code==='Space' && !inInput) { e.preventDefault(); btnPlay.click(); }
+  if ((e.code==='Backspace'||e.code==='Delete') && selIds.size && !inInput) {
     e.preventDefault(); pushUndo();
     clips = clips.filter(c=>!selIds.has(c.id));
     selIds.clear(); renderClips(); drawRuler(); syncPreview(); updateCounter(); updateTextProps();
