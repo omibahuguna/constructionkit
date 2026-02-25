@@ -138,12 +138,11 @@ input  { font-family: inherit; }
 }
 
 .category-tabs {
-  display: flex; overflow-x: auto;
+  display: flex; flex-wrap: wrap;
   padding: var(--sp-2) var(--sp-3);
-  flex-shrink: 0; scrollbar-width: none; gap: 4px;
-  border-bottom: 1px solid var(--border-2);
+  flex-shrink: 0; gap: 4px;
+  border-top: 1px solid var(--border-2);
 }
-.category-tabs::-webkit-scrollbar { display: none; }
 
 .cat-tab {
   font-family: var(--font-body);
@@ -773,22 +772,13 @@ input  { font-family: inherit; }
       <div class="exp-bar-fill" id="exp-bar-fill"></div>
     </div>
     <div class="exp-time" id="exp-time">0 / 0s</div>
-    <button id="publish-close" style="background:transparent;border:1px solid var(--border-2);color:var(--fg-3);font-family:var(--font-body);font-size:var(--text-xs);letter-spacing:-0.04em;text-transform:uppercase;padding:6px 14px;border-radius:6px;cursor:pointer;margin-top:4px;">Cancel</button>
+    <button id="publish-close" style="background:transparent;border:1px solid var(--border-2);color:var(--fg-3);font-family:var(--font-body);font-size:var(--text-xs);letter-spacing:0.08em;text-transform:uppercase;padding:6px 14px;border-radius:0;cursor:pointer;margin-top:4px;">Cancel</button>
   </div>
 </div>
 
 <div class="layout">
   <!-- ── SIDEBAR ── -->
   <div class="sidebar">
-    <div class="category-tabs">
-      <button class="cat-tab active" data-cat="ALL">All</button>
-      <button class="cat-tab" data-cat="AUTHORITY">Authority</button>
-      <button class="cat-tab" data-cat="EVIDENCE">Evidence</button>
-      <button class="cat-tab" data-cat="SECRET">The Secret</button>
-      <button class="cat-tab" data-cat="ORDINARY">Ordinary</button>
-      <button class="cat-tab" data-cat="REACTION">Reaction</button>
-    </div>
-
     <div class="search-bar">
       <div class="search-input-wrapper">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -807,7 +797,17 @@ input  { font-family: inherit; }
       </div>
     </div>
 
+    <div class="category-tabs">
+      <button class="cat-tab active" data-cat="ALL">All</button>
+      <button class="cat-tab" data-cat="AUTHORITY">Authority</button>
+      <button class="cat-tab" data-cat="EVIDENCE">Evidence</button>
+      <button class="cat-tab" data-cat="SECRET">The Secret</button>
+      <button class="cat-tab" data-cat="ORDINARY">Ordinary</button>
+      <button class="cat-tab" data-cat="REACTION">Reaction</button>
+    </div>
+
     <div class="sidebar-scroll">
+      <div class="section-label" style="padding: var(--sp-2) var(--sp-3) 0; flex-shrink:0;">&gt; Video Clips</div>
       <div class="media-grid" id="media-grid"></div>
       <div class="text-stamps-section">
         <div class="section-label">&gt; Text Stamps</div>
@@ -841,7 +841,7 @@ input  { font-family: inherit; }
     <div class="editor-box">
     <div class="tl-preview-section" id="tl-preview-section">
       <div class="tl-preview-container" id="tl-preview-container">
-        <span class="preview-placeholder" id="tl-placeholder">Timeline preview</span>
+        <span class="preview-placeholder" id="tl-placeholder"></span>
         <video id="timeline-player" style="display:none;"></video>
         <div id="tl-text-container">
           <div id="text-size-ctrl" class="text-size-ctrl hidden">
@@ -1149,6 +1149,7 @@ function setupCard(card) {
         const clipArea = e2.target?.closest?.('.track-clips');
         if (clipArea) {
           const trackIdx = parseInt(clipArea.dataset.trackClips);
+          if (trackIdx === 0) return; // text layer only accepts text stamps
           const r = clipArea.getBoundingClientRect();
           const t = Math.max(0, Math.min((e2.clientX-r.left)/r.width*MAX_DUR, MAX_DUR-0.5));
           const d = Math.min(data.duration, MAX_DUR-t);
@@ -1373,7 +1374,10 @@ function setupClipDrag(el, clip, clipArea) {
       const rRect = ruler.getBoundingClientRect();
       const desired = os + ((e2.clientX - sx) / rRect.width) * MAX_DUR;
       const newArea = e2.target?.closest?.('.track-clips');
-      if (newArea) clip.track = parseInt(newArea.dataset.trackClips);
+      if (newArea) {
+        const newTrack = parseInt(newArea.dataset.trackClips);
+        if (!(clip.type === 'video' && newTrack === 0)) clip.track = newTrack;
+      }
       clip.start = Math.max(0, Math.min(MAX_DUR - clip.duration, desired));
       renderClips(); updateCounter();
     };
@@ -1682,7 +1686,8 @@ tracksCont.addEventListener('click', () => {
    KEYBOARD
 ───────────────────────────────────────── */
 document.addEventListener('keydown', e => {
-  if (document.getElementById('intro-overlay')) return;
+  const introEl = document.getElementById('intro-overlay');
+  if (introEl && getComputedStyle(introEl).display !== 'none') return;
   if (e.code==='Space') { e.preventDefault(); btnPlay.click(); }
   if ((e.code==='Backspace'||e.code==='Delete') && selIds.size) {
     e.preventDefault(); pushUndo();
