@@ -1150,11 +1150,15 @@ function setupCard(card) {
         const clipArea = e2.target?.closest?.('.track-clips');
         if (clipArea) {
           const trackIdx = parseInt(clipArea.dataset.trackClips);
-          if (trackIdx === 0) return; // text layer only accepts text stamps
           const r = clipArea.getBoundingClientRect();
           const t = Math.max(0, Math.min((e2.clientX-r.left)/r.width*MAX_DUR, MAX_DUR-0.5));
-          const d = Math.min(data.duration, MAX_DUR-t);
-          if (d > 0.5) addVideoClip(trackIdx, t, d, data.src, data.label, data.duration, data.category);
+          if (trackIdx === 0) {
+            // Text layer — use the video's title as the stamp text
+            addTextClip(0, t, data.label.toUpperCase());
+          } else {
+            const d = Math.min(data.duration, MAX_DUR-t);
+            if (d > 0.5) addVideoClip(trackIdx, t, d, data.src, data.label, data.duration, data.category);
+          }
         }
       }
     };
