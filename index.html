@@ -335,7 +335,7 @@ input  { font-family: inherit; }
 .publish-btn {
   font-family: var(--font-body);
   font-size: var(--text-xs);
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   color: #020202;
@@ -605,23 +605,6 @@ input  { font-family: inherit; }
   background: rgba(255,255,255,0.10) !important;
 }
 
-/* Audio-only (eye off) state */
-.clip.audio-only { opacity: 0.55; border: 1px dashed rgba(255,255,255,0.3); }
-
-/* Eye toggle — right edge of clip, center-height, shows on hover */
-.clip-eye {
-  position: absolute; top: 50%; right: 18px;
-  transform: translateY(-50%);
-  width: 16px; height: 16px;
-  background: none; border: none; padding: 0;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.12s;
-  z-index: 3; color: rgba(255,255,255,0.7);
-}
-.clip:hover .clip-eye,
-.track:hover .clip-eye { opacity: 1; }
-.clip-eye:hover { color: #fff; }
-.clip-eye svg { display: block; pointer-events: none; }
 
 /* Floating font-size control — appears in preview when text clip selected */
 .text-size-ctrl {
@@ -687,6 +670,96 @@ input  { font-family: inherit; }
 }
 .add-track-btn:hover { color: var(--fg-2); border-color: var(--border-2); }
 
+/* Track type picker modal */
+.track-type-picker {
+  position: fixed;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  padding: 4px;
+  display: flex; gap: 4px;
+  z-index: 200;
+}
+.track-type-picker.hidden { display: none; }
+.ttp-btn {
+  background: var(--pill-bg); border: none;
+  color: var(--fg-2);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: -0.04em; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 6px;
+  cursor: pointer; font-weight: 400;
+}
+.ttp-btn:hover { background: var(--accent); color: #020202; }
+
+/* Audio track styling */
+.track.track-audio { background: #080c12; }
+.track.track-audio .track-label { color: var(--accent); opacity: 0.7; }
+.clip.clip-audio-track {
+  background: #1a2535 !important;
+  border: 1px solid rgba(255,159,250,0.25);
+  opacity: 0.8;
+}
+
+/* Clip category sub-label */
+.clip-cat {
+  font-size: 7px;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  line-height: 1;
+  pointer-events: none;
+  overflow: hidden; text-overflow: ellipsis; width: 100%;
+}
+
+/* Stamp select wrapper */
+.stamp-select-wrapper {
+  position: relative;
+  margin-bottom: var(--sp-2);
+}
+.stamp-select-wrapper .stamp-select {
+  margin-bottom: 0;
+  padding-right: 28px;
+}
+.stamp-select-arrow {
+  position: absolute; right: 8px; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--fg-3);
+}
+
+/* Export progress overlay */
+#export-progress-card {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  padding: 32px 40px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 16px;
+  min-width: 320px;
+}
+.exp-label {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  letter-spacing: -0.04em; text-transform: uppercase;
+  color: var(--fg-2);
+}
+.exp-bar-bg {
+  width: 100%; height: 3px;
+  background: var(--surface-2); border-radius: 2px; overflow: hidden;
+}
+.exp-bar-fill {
+  height: 100%; width: 0%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.15s linear;
+}
+.exp-time {
+  font-size: var(--text-xs);
+  color: var(--fg-3);
+  letter-spacing: 0.04em;
+}
+
 /* Drag ghosts */
 .drag-ghost {
   position: fixed; pointer-events: none; z-index: 1000;
@@ -716,59 +789,6 @@ input  { font-family: inherit; }
   align-items: center; justify-content: center;
 }
 #publish-overlay.active { display: flex; }
-#publish-video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: contain; display: none; background: #000;
-}
-#publish-title-card {
-  position: absolute; inset: 0; background: #000;
-  display: none; flex-direction: column;
-  align-items: center; justify-content: center; gap: var(--sp-4);
-  opacity: 0; transition: opacity 0.8s ease;
-}
-#publish-title-card.visible { opacity: 1; }
-.pub-card-title {
-  font-family: var(--font-display);
-  font-size: clamp(20px, 5vw, 58px);
-  font-weight: 900; letter-spacing: 0.08em;
-  color: var(--fg);
-  text-align: center; line-height: 1.15;
-}
-.pub-card-sub {
-  font-size: var(--text-sm);
-  color: var(--fg-2); letter-spacing: 0.1em;
-}
-#publish-close {
-  position: absolute; top: var(--sp-5); right: var(--sp-5); z-index: 10;
-  background: transparent; border: 1px solid var(--fg-3);
-  color: var(--fg-2);
-  font-size: var(--text-sm); letter-spacing: 0.06em;
-  height: var(--target-sm); padding: 0 var(--sp-4);
-  cursor: pointer; border-radius: 3px;
-  transition: color 0.15s, border-color 0.15s;
-}
-#publish-close:hover { color: var(--fg); border-color: var(--fg-2); }
-
-/* Publish text overlays */
-#publish-text-container {
-  position: absolute; inset: 0;
-  pointer-events: none; z-index: 5;
-  overflow: hidden;
-}
-.pub-text-item {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-body);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-red);
-  text-shadow:
-    -2px -2px 0 #000,  0 -2px 0 #000,  2px -2px 0 #000,
-     2px  0   0 #000,  2px  2px 0 #000,  0  2px 0 #000,
-    -2px  2px 0 #000, -2px  0   0 #000;
-}
 </style>
 </head>
 <body>
@@ -780,15 +800,22 @@ input  { font-family: inherit; }
   <button class="intro-btn" id="intro-begin">Begin</button>
 </div>
 
-<!-- ── PUBLISH ── -->
+<!-- ── EXPORT PROGRESS ── -->
 <div id="publish-overlay">
-  <div id="publish-title-card">
-    <div class="pub-card-title" id="pub-card-title">Narrative<br>Construction Kit</div>
-    <div class="pub-card-sub" id="pub-card-sub">A user theory</div>
+  <div id="export-progress-card">
+    <div class="exp-label">Rendering your theory…</div>
+    <div class="exp-bar-bg">
+      <div class="exp-bar-fill" id="exp-bar-fill"></div>
+    </div>
+    <div class="exp-time" id="exp-time">0 / 0s</div>
+    <button id="publish-close" style="background:transparent;border:1px solid var(--border-2);color:var(--fg-3);font-family:var(--font-body);font-size:var(--text-xs);letter-spacing:-0.04em;text-transform:uppercase;padding:6px 14px;border-radius:6px;cursor:pointer;margin-top:4px;">Cancel</button>
   </div>
-  <video id="publish-video" playsinline></video>
-  <div id="publish-text-container"></div>
-  <button id="publish-close">✕ Close</button>
+</div>
+
+<!-- ── TRACK TYPE PICKER ── -->
+<div id="track-type-picker" class="track-type-picker hidden">
+  <button class="ttp-btn" id="ttp-video">Video layer</button>
+  <button class="ttp-btn" id="ttp-audio">Audio layer</button>
 </div>
 
 <div class="layout">
@@ -825,19 +852,22 @@ input  { font-family: inherit; }
       <div class="media-grid" id="media-grid"></div>
       <div class="text-stamps-section">
         <div class="section-label">Text</div>
-        <select class="stamp-select" id="stamp-select">
-          <option value="COINCIDENCE?">COINCIDENCE?</option>
-          <option value="WHAT ARE THEY HIDING?">WHAT ARE THEY HIDING?</option>
-          <option value="EXPOSED">EXPOSED</option>
-          <option value="FOLLOW THE MONEY">FOLLOW THE MONEY</option>
-          <option value="THEY KNEW">THEY KNEW</option>
-          <option value="ASK YOURSELF WHY">ASK YOURSELF WHY</option>
-          <option value="LOOK CLOSER">LOOK CLOSER</option>
-          <option value="WAKE UP">WAKE UP</option>
-          <option value="THE TRUTH IS OUT THERE!">THE TRUTH IS OUT THERE!</option>
-        </select>
-        <div class="stamp" id="active-stamp" data-stamp="COINCIDENCE?">COINCIDENCE?</div>
+        <div class="stamp-select-wrapper">
+          <select class="stamp-select" id="stamp-select">
+            <option value="COINCIDENCE?">COINCIDENCE?</option>
+            <option value="WHAT ARE THEY HIDING?">WHAT ARE THEY HIDING?</option>
+            <option value="EXPOSED">EXPOSED</option>
+            <option value="FOLLOW THE MONEY">FOLLOW THE MONEY</option>
+            <option value="THEY KNEW">THEY KNEW</option>
+            <option value="ASK YOURSELF WHY">ASK YOURSELF WHY</option>
+            <option value="LOOK CLOSER">LOOK CLOSER</option>
+            <option value="WAKE UP">WAKE UP</option>
+            <option value="THE TRUTH IS OUT THERE!">THE TRUTH IS OUT THERE!</option>
+          </select>
+          <svg class="stamp-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
         <input type="text" class="custom-stamp-input" id="custom-stamp-input" placeholder="Or type your own text…" autocomplete="off">
+        <div class="stamp" id="active-stamp" data-stamp="COINCIDENCE?">COINCIDENCE?</div>
       </div>
     </div>
   </div>
@@ -845,7 +875,7 @@ input  { font-family: inherit; }
   <!-- ── MAIN ── -->
   <div class="main-area">
     <div class="main-header">
-      <div class="app-title">Narrative Construction Kit</div>
+      <div></div>
       <button class="publish-btn" id="publish-btn">Publish your theory</button>
     </div>
 
@@ -955,6 +985,7 @@ const getTracks = () => document.querySelectorAll('.track');
    STATE
 ───────────────────────────────────────── */
 let trackCount   = 0;
+const trackTypes = {};       // trackIdx → 'video' | 'audio'
 let clips        = [];       // all clips (video + text)
 let playing      = false;
 let playTime     = 0;
@@ -1002,7 +1033,7 @@ function filterGrid() {
   const q = searchInput.value.trim().toLowerCase();
   document.querySelectorAll('#media-grid .card').forEach(c => {
     const catOk  = activeCat === 'ALL' || c.dataset.category === activeCat;
-    const srchOk = !q || (c.dataset.label||'').toLowerCase().includes(q);
+    const srchOk = !q || (c.dataset.label||'').toLowerCase().includes(q) || (c.dataset.category||'').toLowerCase().includes(q);
     c.classList.toggle('hidden', !catOk || !srchOk);
   });
 }
@@ -1026,6 +1057,7 @@ function updateTextProps() {
   if (selIds.size !== 1) { tscCtrl.classList.add('hidden'); return; }
   const clip = clips.find(c => c.id === [...selIds][0]);
   if (!clip || clip.type !== 'text') { tscCtrl.classList.add('hidden'); return; }
+  if (playTime < clip.start || playTime >= clip.start + clip.duration) { tscCtrl.classList.add('hidden'); return; }
   tscVal.textContent = clip.fontSize + 'px';
   // Position overlay near the text element in preview
   tscCtrl.style.left = (clip.textX ?? 50) + '%';
@@ -1052,16 +1084,15 @@ document.getElementById('tsc-up').addEventListener('click', () => {
 /* ─────────────────────────────────────────
    TRACK MANAGEMENT
 ───────────────────────────────────────── */
-function createTrack() {
+function createTrack(type = 'video') {
   const idx   = trackCount++;
-  const total = getTracks().length + 1;
+  trackTypes[idx] = type;
   const track = document.createElement('div');
-  track.className = 'track'; track.dataset.track = idx;
+  track.className = 'track track-' + type; track.dataset.track = idx;
 
   // Layer label (top = layer 1, highest priority)
   const lbl = document.createElement('span');
   lbl.className = 'track-label';
-  lbl.textContent = `L${total}`;
   lbl.dataset.labelFor = idx;
 
   const clipArea = document.createElement('div');
@@ -1078,9 +1109,14 @@ function createTrack() {
 
 function relabelTracks() {
   const tracks = getTracks();
-  tracks.forEach((t, i) => {
+  let vIdx = 0, aIdx = 0;
+  tracks.forEach(t => {
+    const idx = parseInt(t.dataset.track);
     const lbl = t.querySelector('.track-label');
-    if (lbl) lbl.textContent = `L${i+1}`;
+    if (lbl) {
+      if (trackTypes[idx] === 'audio') { lbl.textContent = `A${++aIdx}`; }
+      else { lbl.textContent = `V${++vIdx}`; }
+    }
   });
 }
 
@@ -1099,8 +1135,23 @@ function updateTrackButtons() {
   });
 }
 
-createTrack(); createTrack(); createTrack();
-addTrackBtn.addEventListener('click', createTrack);
+createTrack('video'); createTrack('video'); createTrack('video');
+
+const trackTypePicker = document.getElementById('track-type-picker');
+addTrackBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const rect = addTrackBtn.getBoundingClientRect();
+  trackTypePicker.style.top  = (rect.top - 52) + 'px';
+  trackTypePicker.style.left = rect.left + 'px';
+  trackTypePicker.classList.remove('hidden');
+});
+document.getElementById('ttp-video').addEventListener('click', () => {
+  trackTypePicker.classList.add('hidden'); createTrack('video');
+});
+document.getElementById('ttp-audio').addEventListener('click', () => {
+  trackTypePicker.classList.add('hidden'); createTrack('audio');
+});
+document.addEventListener('click', () => trackTypePicker.classList.add('hidden'));
 
 /* ─────────────────────────────────────────
    CLIP PREVIEW (LEFT PANEL)
@@ -1170,7 +1221,7 @@ function setupCard(card) {
     if (e.button !== 0) return;
     const sx = e.clientX, sy = e.clientY;
     let drag = false, ghost = null;
-    const data = { src: card.dataset.src, label: card.dataset.label, duration: parseFloat(card.dataset.duration)||30 };
+    const data = { src: card.dataset.src, label: card.dataset.label, duration: parseFloat(card.dataset.duration)||30, category: card.dataset.category };
     const onMove = e2 => {
       if (!drag && (Math.abs(e2.clientX-sx)>5 || Math.abs(e2.clientY-sy)>5)) {
         drag = true; ghost = mkGhost(data.label, 'drag-ghost'); document.body.appendChild(ghost);
@@ -1191,7 +1242,7 @@ function setupCard(card) {
           const r = clipArea.getBoundingClientRect();
           const t = Math.max(0, Math.min((e2.clientX-r.left)/r.width*MAX_DUR, MAX_DUR-0.5));
           const d = Math.min(data.duration, MAX_DUR-t);
-          if (d > 0.5) addVideoClip(trackIdx, t, d, data.src, data.label, data.duration);
+          if (d > 0.5) addVideoClip(trackIdx, t, d, data.src, data.label, data.duration, data.category);
         }
       }
     };
@@ -1301,7 +1352,7 @@ async function loadLibrary() {
 /* ─────────────────────────────────────────
    CLIP CREATION
 ───────────────────────────────────────── */
-function addVideoClip(track, start, dur, src, label, srcDur) {
+function addVideoClip(track, start, dur, src, label, srcDur, category) {
   const s = Math.max(0, start);
   const d = Math.min(dur, MAX_DUR - start);
   if (d <= 0.5) return;
@@ -1310,7 +1361,8 @@ function addVideoClip(track, start, dur, src, label, srcDur) {
     id: Date.now()+Math.random(), type:'video', track,
     start: s, duration: d,
     src, label, srcDuration:srcDur, srcOffset:0,
-    color: CLIP_COLORS[colorIdx++ % CLIP_COLORS.length]
+    color: CLIP_COLORS[colorIdx++ % CLIP_COLORS.length],
+    category: category || 'ALL'
   });
   renderClips(); drawRuler(); syncPreview(); updateCounter();
 }
@@ -1367,7 +1419,8 @@ function renderClips() {
     if (!clipArea) return;
     const isText = clip.type === 'text';
     const el = document.createElement('div');
-    el.className = 'clip' + (isText?' clip-text':'') + (selIds.has(clip.id)?' selected':'') + (!isText && clip.audioOnly?' audio-only':'');
+    const isAudioTrack = trackTypes[clip.track] === 'audio';
+    el.className = 'clip' + (isText?' clip-text':'') + (selIds.has(clip.id)?' selected':'') + (!isText && isAudioTrack?' clip-audio-track':'');
     el.dataset.clipId = clip.id;
     el.style.left  = (clip.start    / MAX_DUR * 100) + '%';
     el.style.width = (clip.duration / MAX_DUR * 100) + '%';
@@ -1376,24 +1429,16 @@ function renderClips() {
     const hL = document.createElement('div'); hL.className='clip-handle left';
     const hR = document.createElement('div'); hR.className='clip-handle right';
     const lbl = document.createElement('span'); lbl.className='clip-label';
-    lbl.textContent = isText ? 'TEXT' : clip.label;
+    lbl.textContent = isText ? 'TEXT' : 'VIDEO';
     if (isText) { lbl.style.fontFamily='var(--font-display)'; lbl.style.fontSize='8px'; lbl.style.textAlign='center'; lbl.style.width='100%'; }
 
-    // Eye toggle for video clips
-    if (!isText) {
-      const eye = document.createElement('button');
-      eye.className = 'clip-eye';
-      eye.innerHTML = clip.audioOnly ? EYE_OFF : EYE_ON;
-      eye.title = clip.audioOnly ? 'Audio only — click to restore video' : 'Toggle audio-only';
-      eye.addEventListener('click', e => {
-        e.stopPropagation();
-        clip.audioOnly = !clip.audioOnly;
-        renderClips(); syncPreview();
-      });
-      el.appendChild(eye);
+    el.appendChild(hL); el.appendChild(lbl);
+    if (!isText && clip.category && clip.category !== 'ALL') {
+      const catSpan = document.createElement('span'); catSpan.className='clip-cat';
+      catSpan.textContent = clip.category;
+      el.appendChild(catSpan);
     }
-
-    el.appendChild(hL); el.appendChild(lbl); el.appendChild(hR);
+    el.appendChild(hR);
     clipArea.appendChild(el);
 
     el.addEventListener('click', e => {
@@ -1512,7 +1557,7 @@ function setupTextDrag(el, clip) {
 function syncAudioTracks() {
   const t = playTime;
   const audioClips = clips.filter(c =>
-    c.type === 'video' && c.audioOnly && t >= c.start && t < c.start + c.duration
+    c.type === 'video' && trackTypes[c.track] === 'audio' && t >= c.start && t < c.start + c.duration
   );
   const activeIds = new Set(audioClips.map(c => c.id));
 
@@ -1552,10 +1597,11 @@ function teardownAudioTracks() {
 ───────────────────────────────────────── */
 function getVideoAt(t) {
   // Lower track index = higher layer priority (track 0 = top)
-  // Audio-only clips contribute sound but not video
+  // Clips on audio-type tracks contribute sound only, not video
   let best = null;
   for (const c of clips) {
-    if (c.type !== 'video' || c.audioOnly) continue;
+    if (c.type !== 'video') continue;
+    if (trackTypes[c.track] === 'audio') continue;
     if (t >= c.start && t < c.start + c.duration) {
       if (!best || c.track < best.track) best = c;
     }
@@ -1625,8 +1671,25 @@ function setPlayIcon(showPlay) {
     : '<rect x="7" y="5" width="7" height="26" rx="1" fill="#d2d5e0"/><rect x="22" y="5" width="7" height="26" rx="1" fill="#d2d5e0"/>';
 }
 btnPlay.addEventListener('click', () => playing ? stop() : start());
-btnBack.addEventListener('click', () => { playTime=Math.max(0,playTime-5); updatePlayhead(); syncPreview(); });
-btnFwd.addEventListener('click',  () => { playTime=Math.min(MAX_DUR,playTime+5); updatePlayhead(); syncPreview(); });
+
+function getNextClipTime(t) {
+  const starts = [...new Set(clips.map(c => c.start))].filter(s => s > t + 0.05).sort((a,b)=>a-b);
+  return starts.length ? starts[0] : null;
+}
+function getPrevClipTime(t) {
+  const starts = [...new Set(clips.map(c => c.start))].filter(s => s < t - 0.05).sort((a,b)=>b-a);
+  return starts.length ? starts[0] : 0;
+}
+
+btnBack.addEventListener('click', () => {
+  const prev = getPrevClipTime(playTime);
+  playTime = prev !== null ? prev : 0;
+  updatePlayhead(); syncPreview();
+});
+btnFwd.addEventListener('click', () => {
+  const next = getNextClipTime(playTime);
+  if (next !== null) { playTime = next; updatePlayhead(); syncPreview(); }
+});
 
 function start() {
   if (!clips.length) return;
@@ -1718,79 +1781,128 @@ document.addEventListener('keydown', e => {
     selIds.clear(); renderClips(); drawRuler(); syncPreview(); updateCounter(); updateTextProps();
   }
   if (e.code==='KeyZ'&&(e.metaKey||e.ctrlKey)&&!e.shiftKey) { e.preventDefault(); undo(); }
-  if (e.code==='Escape') { const po=document.getElementById('publish-overlay'); if(po.classList.contains('active')) endPublish(); }
+  if (e.code==='Escape') { const po=document.getElementById('publish-overlay'); if(po.classList.contains('active')) { expActive=false; po.classList.remove('active'); } }
 });
 
 /* ─────────────────────────────────────────
-   PUBLISH
+   EXPORT (MediaRecorder → download)
 ───────────────────────────────────────── */
-const pubOverlay   = document.getElementById('publish-overlay');
-const pubVideo     = document.getElementById('publish-video');
-const pubTitleCard = document.getElementById('publish-title-card');
-const pubCardTitle = document.getElementById('pub-card-title');
-const pubCardSub   = document.getElementById('pub-card-sub');
-const pubTextCont  = document.getElementById('publish-text-container');
+const pubOverlay = document.getElementById('publish-overlay');
+const expBarFill = document.getElementById('exp-bar-fill');
+const expTimeEl  = document.getElementById('exp-time');
+let expActive = false;
 
-let pubActive=false, pubTimer=null, pubRAF=null, pubTime=0, pubLast=0;
-let pubVidSrc='', pubVidClip=null;
-
-document.getElementById('publish-btn').addEventListener('click', () => {
+document.getElementById('publish-btn').addEventListener('click', async () => {
   if (!clips.length) return;
-  pubActive=true; pubTime=0; pubVidSrc=''; pubVidClip=null;
-  pubOverlay.classList.add('active');
-  pubVideo.style.display='none'; pubTextCont.innerHTML='';
-  showPubCard('Narrative<br>Construction Kit','A user theory',3000, startPub);
-});
-function showPubCard(title,sub,dur,cb) {
-  pubCardTitle.innerHTML=title; pubCardSub.textContent=sub;
-  pubTitleCard.style.display='flex'; pubVideo.style.display='none'; pubTextCont.innerHTML='';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>pubTitleCard.classList.add('visible')));
-  pubTimer=setTimeout(()=>{
-    pubTitleCard.classList.remove('visible');
-    setTimeout(()=>{ pubTitleCard.style.display='none'; if(pubActive&&cb) cb(); },850);
-  },dur);
-}
-function startPub() {
-  if (!pubActive) return;
-  pubTime=0; pubLast=performance.now();
-  pubVideo.style.display='block';
-  pubRAF=requestAnimationFrame(pubTick);
-}
-function pubTick(now) {
-  if (!pubActive) return;
-  pubTime += (now-pubLast)/1000; pubLast=now;
-  if (pubTime>=MAX_DUR) {
-    pubVideo.pause(); pubVideo.style.display='none'; pubTextCont.innerHTML='';
-    showPubCard('The truth is<br>out there','Theory complete',5000,null); return;
-  }
-  const vClip = getVideoAt(pubTime);
-  if (vClip) {
-    if (pubVidClip!==vClip) {
-      pubVidClip=vClip;
-      if (pubVidSrc!==vClip.src) { pubVidSrc=vClip.src; pubVideo.src=vClip.src; pubVideo.play(); }
-      pubVideo.currentTime=vClip.srcOffset+(pubTime-vClip.start);
-      if (pubVideo.paused) pubVideo.play();
-    }
-  } else { if (!pubVideo.paused) pubVideo.pause(); }
+  const totalDur = clips.reduce((m, c) => Math.max(m, c.start + c.duration), 0);
+  if (totalDur === 0) return;
 
-  // Text overlays
-  const tClips = getActiveTextClips(pubTime);
-  pubTextCont.innerHTML='';
-  tClips.forEach(c => {
-    const el=document.createElement('div'); el.className='pub-text-item';
-    el.textContent=c.text; el.style.fontSize=c.fontSize+'px';
-    el.style.left=(c.textX??50)+'%'; el.style.top=(c.textY??75)+'%';
-    pubTextCont.appendChild(el);
-  });
-  pubRAF=requestAnimationFrame(pubTick);
-}
-function endPublish() {
-  pubActive=false; clearTimeout(pubTimer); cancelAnimationFrame(pubRAF);
-  pubVideo.pause(); pubVideo.src=''; pubTextCont.innerHTML='';
-  pubTitleCard.classList.remove('visible'); pubTitleCard.style.display='none';
+  pubOverlay.classList.add('active');
+  expActive = true;
+  expBarFill.style.width = '0%';
+  expTimeEl.textContent = `0 / ${Math.ceil(totalDur)}s`;
+
+  const EXP_W = 1280, EXP_H = 720;
+  const exportCanvas = document.createElement('canvas');
+  exportCanvas.width = EXP_W; exportCanvas.height = EXP_H;
+  const ctx = exportCanvas.getContext('2d');
+
+  const expPlayer = document.createElement('video');
+  expPlayer.crossOrigin = 'anonymous';
+  expPlayer.style.display = 'none';
+  document.body.appendChild(expPlayer);
+
+  const mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=avc1')
+    ? 'video/mp4;codecs=avc1'
+    : MediaRecorder.isTypeSupported('video/mp4')
+    ? 'video/mp4'
+    : 'video/webm';
+
+  const canvasStream = exportCanvas.captureStream(30);
+  const recorder = new MediaRecorder(canvasStream, { mimeType });
+  const chunks = [];
+
+  recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+  recorder.onstop = () => {
+    expPlayer.remove();
+    if (!chunks.length) { pubOverlay.classList.remove('active'); return; }
+    const blob = new Blob(chunks, { type: mimeType });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = 'theory.' + (mimeType.includes('mp4') ? 'mp4' : 'webm');
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    pubOverlay.classList.remove('active');
+  };
+
+  let expTime = 0, expLast = performance.now();
+  let expVidSrc = '', expVidClip = null;
+
+  recorder.start(100);
+
+  const expTick = now => {
+    if (!expActive) { recorder.stop(); return; }
+    const dt = (now - expLast) / 1000; expLast = now;
+    expTime += dt;
+
+    if (expTime >= totalDur) {
+      ctx.clearRect(0, 0, EXP_W, EXP_H);
+      expActive = false; recorder.stop(); return;
+    }
+
+    expBarFill.style.width = (expTime / totalDur * 100).toFixed(1) + '%';
+    expTimeEl.textContent  = `${expTime.toFixed(1)} / ${Math.ceil(totalDur)}s`;
+
+    // Draw video
+    const vClip = getVideoAt(expTime);
+    if (vClip) {
+      const tgt = Math.max(0, vClip.srcOffset + (expTime - vClip.start));
+      if (expVidClip !== vClip) {
+        expVidClip = vClip;
+        if (expVidSrc !== vClip.src) {
+          expVidSrc = vClip.src;
+          expPlayer.src = vClip.src;
+          expPlayer.currentTime = tgt;
+          expPlayer.play().catch(()=>{});
+        } else if (Math.abs(expPlayer.currentTime - tgt) > 0.5) {
+          expPlayer.currentTime = tgt;
+        }
+      }
+      if (expPlayer.readyState >= 2) {
+        ctx.drawImage(expPlayer, 0, 0, EXP_W, EXP_H);
+      } else {
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, EXP_W, EXP_H);
+      }
+    } else {
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, EXP_W, EXP_H);
+    }
+
+    // Draw text overlays
+    getActiveTextClips(expTime).forEach(clip => {
+      const x = EXP_W * (clip.textX ?? 50) / 100;
+      const y = EXP_H * (clip.textY ?? 75) / 100;
+      ctx.save();
+      ctx.font = `700 ${clip.fontSize * 1.5}px "IBM Plex Mono", monospace`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const offsets = [[-2,-2],[0,-2],[2,-2],[2,0],[2,2],[0,2],[-2,2],[-2,0]];
+      ctx.fillStyle = '#000';
+      offsets.forEach(([dx,dy]) => ctx.fillText(clip.text.toUpperCase(), x+dx*2, y+dy*2));
+      ctx.fillStyle = '#f03030';
+      ctx.fillText(clip.text.toUpperCase(), x, y);
+      ctx.restore();
+    });
+
+    requestAnimationFrame(expTick);
+  };
+
+  requestAnimationFrame(expTick);
+});
+
+document.getElementById('publish-close').addEventListener('click', () => {
+  expActive = false;
   pubOverlay.classList.remove('active');
-}
-document.getElementById('publish-close').addEventListener('click', endPublish);
+});
 
 /* ─────────────────────────────────────────
    INIT
