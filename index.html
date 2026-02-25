@@ -1345,11 +1345,6 @@ function renderClips() {
     if (isText) { lbl.style.fontFamily='var(--font-display)'; lbl.style.fontSize='8px'; lbl.style.textAlign='center'; lbl.style.width='100%'; }
 
     el.appendChild(hL); el.appendChild(lbl);
-    if (!isText && clip.category && clip.category !== 'ALL') {
-      const catSpan = document.createElement('span'); catSpan.className='clip-cat';
-      catSpan.textContent = clip.category;
-      el.appendChild(catSpan);
-    }
     el.appendChild(hR);
     clipArea.appendChild(el);
 
